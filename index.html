@@ -47,36 +47,38 @@
     
     
     
-  function generalUpdate(obj, classType, data,  attributes)
+  function generalUpdate(obj, elt, data,  attributes)
 	{
-
-			 var output = obj.selectAll(classType)
+			var className  = ((elt.hasOwnProperty('cl'))? elt.class: elt.obj);
+			console.log(className)
+			var output = obj.selectAll(className)
 							.data(data);
-			
-			for(var name in attributes)
-        {if( attributes.hasOwnProperty(name))
-          {
-            output = output.attr(name, attributes[name]);
-          }
-        }
 
- 
-	return(output)
+ 	return(output)
 	
 	};
 	
-  function generalEnter(obj, classType, attributes)
+  function generalEnter(obj, elt, attributes)
   {
-    var output = obj.enter().append(classType);
-    for(var name in attributes)
-    {if( attributes.hasOwnProperty(name))
-       {
-            output = output.attr(name, attributes[name]);
-        };
-        };
+    var output = obj.enter().append(elt.obj);
+	if(elt.hasOwnProperty('class'))
+		output = output.attr('class', elt.class);
     return(output)
   };  
     
+	
+function attributes(obj, attributes)
+{
+var output = obj;
+	for(var name in attributes)
+    {
+		if( attributes.hasOwnProperty(name))
+		{
+            output = output.attr(name, attributes[name]);
+        };
+    };
+	return(output);
+}
     
     function render(data, year1)
     {
@@ -96,64 +98,70 @@
       
       console.log(data);
       
-     	var yValueBottom = d => d.GHG_Cum - d.GHG;
-      var yValueTop = d  => d.GHG_Cum
+     var yValueBottom = d => d.GHG_Cum - d.GHG;
+     var yValueTop = d  => d.GHG_Cum
       
       
-      var body = d3.select('body');
-      var svg = generalUpdate(body, 'svg', [null], {height:height,width:width});
+     var body = d3.select('body');
+     var svg = generalUpdate(body, {obj:'svg'}, [null], {height:height,width:width});
+		 svg = attributes(svg,{height:height,width:width} );
 
-
       
-      var div = d3.select('body')
-      						.selectAll('div')
-      						.data([null]);
+     var div = body
+      			.selectAll('div')
+      			.data([null]);
+				
+				
       div = div.enter()
       				.append('div')
       				.attr("class", "tooltip")
     					.style("opacity", 0);
 
-       svg = generalEnter(svg, 'svg',{height:height,width:width} ); //Why do I need this here and not after svg declaration?
+      svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
+	  svg = attributes(svg,{height:height,width:width} );
 
 
-
-     var group = generalUpdate(svg, 'g',[null], {height:innerHeight
+     var group = generalUpdate(svg, {obj:'g'},[null]);
+		group = attributes(group, {height:innerHeight
                                           , width: innerWidth
                                           , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
 
-    		group = generalEnter(group, 'g', {height:innerHeight
+    		group = generalEnter(group, {obj: 'g'}, {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
+										  
+			group = attributes(group, {height:innerHeight
                                           , width: innerWidth
                                           , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
       
       
-      
-      var annotation = group.selectAll('.annotation').data([null]);
-      		annotation = annotation.enter()
-          							.append('text')
-          							.text("GHG emissions for " + numberOfCountries +" largest countries " + year1)
-          							.attr('font-size','30-em')
-          							.attr('stroke', 'black')
-          							.merge(annotation)
-          							.attr('transform', 'translate(100, 100)')
-          							.attr('font-size', '1.5em')
-          							.attr('stroke', 'black')
-          							.attr('fill', 'white');      
-      
-      
-      var topMarks = group.selectAll('.topMarks').data(data);
-      topMarks = topMarks.enter()
-      						.append('circle')
-      						.attr('class','topMarks')
-      						.merge(topMarks)
-      						.attr('cx', function(d){return xScale(xValue(d)) + xScale.bandwidth()/2;})
-      						.attr('cy', function(d){return yScale(yValueTop(d));})
-      						.attr('r', function(d){return Math.sqrt(height * d.Population/(1000000*600));})
-      						.attr('fill', 'rgba(255,123,50,.2)');
-      
+     
 
-      		
-      						
-        topMarks.on("mouseover", function(d) {
+
+	 var annotation = generalUpdate(group, {cl: '.annotation', obj:'text'}, [null]);
+	 annotation = generalEnter(annotation, {cl: '.annotation', obj:'text'});
+	 annotation = annotation.text("GHG emissions for " + numberOfCountries +" largest countries " + year1);
+	 annotation = attributes(annotation, {
+											stroke: 'black'
+											, transform: 'translate(100, 100)'
+											, "font-size": '1.5em'
+											, fill: 'white'}
+							);
+  
+      
+      var topMarks = generalUpdate(group, {cl: ".topMarks", obj: "circle"}, data);
+	  topMarks = generalEnter(topMarks,{cl: ".topMarks", obj: "circle"});
+	  topMarks = topMarks.merge(topMarks);
+	  topMarks = attributes(topMarks,{cx: function(d){return xScale(xValue(d)) + xScale.bandwidth()/2;}
+									, cy: function(d){return yScale(yValueTop(d));}
+									, r:  function(d){return Math.sqrt(height * d.Population/(1000000*600));}
+									, fill: 'rgba(255,123,50,.2)'
+	  
+	  } );
+	  
+        		
+   ///For interactivity.  I may modularize this   						
+        topMarks = topMarks.on("mouseover", function(d) {
           		d3.select(this)
               	.transition()
               	.attr('fill', 'orange')
@@ -184,82 +192,65 @@
         
         }
              
-             );;
+             );
       
-      
-     
-
-		
-
-
-      
+  
       var bandwidth = xScale.bandwidth();
-      var connectingMarks = group.selectAll('.connectingMarks').data(data);
-      		connectingMarks = connectingMarks.enter()
-          									.append('rect')
-          									.attr('class', 'connectingMarks')
-          									.merge(connectingMarks)
-          									.attr('x', function(d){return xScale(xValue(d));})
-														.attr('y', function(d){return yScale(yValueTop(d));})  
-          									.attr('width', function(d){return xScale.bandwidth();})
-          									.attr('height', function(d){return innerHeight - yScale(yValueTop(d) - yValueBottom(d));})
-          										.on('mouseover', function(d){
+	  var connectingMarks = generalUpdate(group, {cl: '.connectingMarks', obj: 'rect'}, data);
+	  connectingMarks = generalEnter(connectingMarks, {cl: '.connectingMarks', obj: 'rect'} );
+	  connetingMarks = connectingMarks.merge(connectingMarks);
+	  connectingMarks = attributes(connectingMarks, {x:function(d){return xScale(xValue(d));}
+								  ,y:function(d){return yScale(yValueTop(d));}  
+								  , width: function(d){return xScale.bandwidth();}
+								  , height: function(d){return innerHeight - yScale(yValueTop(d) - yValueBottom(d));}});
+								  
+	  connectingMarks = connectingMarks.on('mouseover', function(d){
             
             										d3.select(this)
-                                	.transition()
-                                	.attr("fill", "gray")
-                                	.duration(50);
-            
-            
-            
-          })
-          										.on('mouseout', function(d){d3.select(this).transition()
+													.transition()
+													.attr("fill", "gray")
+													.duration(50);
+										 })
+										.on('mouseout', function(d){d3.select(this).transition()
                                                         .attr('fill','black')
                                                         .duration(50);
-                                                         
-                                                        
-                                                         
                                                          });
+
           									
-          									
-      var bottomMarks = group.selectAll('.bottomMarks').data(data);
-      		bottomMarks = bottomMarks.enter()
-          							.append('line')
-          							.attr('class', 'bottomMarks')
-          							.merge(bottomMarks)
-          							.attr('x1', function(d){return(xScale(xValue(d)) + bandwidth/2);})
-          							.attr('x2', function(d){return(xScale(xValue(d)) + bandwidth/2);})
-          							.attr('y1', function(d){return yScale(yValueBottom(d));})
-          							.attr('y2', function(d){return yScale(1500) ;})
-          							.attr('stroke','black')
-          							.attr('stroke-dasharray','5,2')
-          							.append('svg:title')
-          							.text(function(d){return "Country: " + d.Country
+	var bottomMarks = generalUpdate(group, {cl:'.bottomMarks', obj: 'line'}, data);
+		bottomMarks = generalEnter(bottomMarks, {cl:'.bottomMarks', obj: 'line'} );
+		bottomMarks = bottomMarks.merge(bottomMarks);
+		bottomMarks = attributes(bottomMarks, {
+								x1: function(d){return(xScale(xValue(d)) + bandwidth/2);}
+								, x2: function(d){return(xScale(xValue(d)) + bandwidth/2);}
+								, y1: function(d){return yScale(yValueBottom(d));}
+								, y2: function(d){return yScale(1500) ;}
+								, stroke: 'black'
+								, 'stroke-dasharray': '5,2'		
+		});
+		bottomMarks = bottomMarks.append('svg:title')
+								 .text(function(d){return "Country: " + d.Country
                                           						+ "\nCumulative GHG emissions: "
                                          							+ d.GHG_Cum; + " tonnes"});
-      
 
-     var xAxisG = group.selectAll('.xAxis').data(data);
-      	xAxisG = xAxisG.enter()
-        					.append('g')
-        					.style('font-size', '7px')
-        					.style('font', 'Times')
-        					.merge(xAxisG)
-        					.attr('transform', `translate(0, ${yScale(innerHeight)})`);
+	 var xAxisG = generalUpdate(group, {obj: 'g', cl: '.xAxis'}, [null]); 
+	 xAxisG = generalEnter(xAxisG, {obj: 'g', cl: '.xAxis'});
+	 xAxisG = xAxisG.style('font-size', '7px').style('font', 'Times').merge(xAxisG);
+	 xAxisG = attributes(xAxisG, {'transform':`translate(0, ${yScale(innerHeight)})`});
+  
       
       var xAxis = d3.axisBottom()
       							.scale(xScale)
                     .ticks(5)
       							.tickSize(width/50 + ' em');
-      
-     var yAxisG = group.selectAll('.yAxis').data(data);
-      	yAxisG = yAxisG.enter()
-        					.append('g')
-        					.style('font-size', '15px')
-        					.style('font', 'Helvetica')
-        					.merge(yAxisG)
-        					.attr('transform',`translate(${xScale(0)},0)`)
-        					;         
+     
+
+
+	 var yAxisG = generalUpdate(group, {obj: 'g', cl: '.yAxis'}, [null]);
+		 yAxisG = generalEnter(yAxisG, {obj: 'g', cl: '.yAxis'});
+		 yAxisG = yAxisG.style('font-size', '15px').style('font', 'Helvetica').merge(yAxisG);
+		 yAxisG = attributes(yAxisG, {'transform':`translate(${xScale(0)},0)`});
+ 
 
       var yAxis = d3.axisLeft()
       						.scale(yScale)

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script>
+  <style>
+    body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+    .topMarks {}
+    .bottomMarks {}
+    .bottomMarks:hover{stroke:gray; stroke-width:.15em;}
+    .connectingMarks {}
+    .annotation{}
+    .xAxis, .yAxis {}
+    
+ 
+
+    .textMarker{}
+   .tooltip{
+  position: absolute;           
+  text-align: center;           
+  width: 60px;                  
+  height: 28px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none; 
+    }
+
+ 
+
+  </style>
+</head>
+
+<body>
+  <script>
+    // Feel free to change or delete any of the code you see in this editor!
+
+    var height = 500;
+    var width = 960;
+    var margin = {top: 20, bottom: 20, left:50, right:20};
+    var innerHeight = height - margin['top'];
+    var innerWidth = height - margin['left'];
+
+    
+    
+    
+  function generalUpdate(obj, classType, data,  attributes)
+	{
+
+			 var output = obj.selectAll(classType)
+							.data(data);
+			
+			for(var name in attributes)
+        {if( attributes.hasOwnProperty(name))
+          {
+            output = output.attr(name, attributes[name]);
+          }
+        }
+
+ 
+	return(output)
+	
+	};
+	
+  function generalEnter(obj, classType, attributes)
+  {
+    var output = obj.enter().append(classType);
+    for(var name in attributes)
+    {if( attributes.hasOwnProperty(name))
+       {
+            output = output.attr(name, attributes[name]);
+        };
+        };
+    return(output)
+  };  
+    
+    
+    function render(data, year1)
+    {
+      var numberOfCountries = 10;
+      data = data.sort(function(x,y){return(x.Final_Rank - y.Final_Rank);});
+      data = data.filter(function(d){return d.Final_Rank <= numberOfCountries;});
+      var xValue = d => d.Country;//function(d){return d.Country;}
+      var xScale = d3.scaleBand().padding(.90);
+      		xScale.domain(data.map(xValue))
+          .range([0,innerWidth]);
+      
+      var yScale = d3.scaleLinear().domain([0,d3.max(data, d => d.GHG_Cum) + 1000])
+      							.range([innerHeight,0]);
+      
+      
+			data = data.filter(function(d){return d.Year == year1; });
+      
+      console.log(data);
+      
+     	var yValueBottom = d => d.GHG_Cum - d.GHG;
+      var yValueTop = d  => d.GHG_Cum
+      
+      
+      var body = d3.select('body');
+      var svg = generalUpdate(body, 'svg', [null], {height:height,width:width});
+
+
+      
+      var div = d3.select('body')
+      						.selectAll('div')
+      						.data([null]);
+      div = div.enter()
+      				.append('div')
+      				.attr("class", "tooltip")
+    					.style("opacity", 0);
+
+       svg = generalEnter(svg, 'svg',{height:height,width:width} ); //Why do I need this here and not after svg declaration?
+
+
+
+     var group = generalUpdate(svg, 'g',[null], {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
+
+    		group = generalEnter(group, 'g', {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
+      
+      
+      
+      var annotation = group.selectAll('.annotation').data([null]);
+      		annotation = annotation.enter()
+          							.append('text')
+          							.text("GHG emissions for " + numberOfCountries +" largest countries " + year1)
+          							.attr('font-size','30-em')
+          							.attr('stroke', 'black')
+          							.merge(annotation)
+          							.attr('transform', 'translate(100, 100)')
+          							.attr('font-size', '1.5em')
+          							.attr('stroke', 'black')
+          							.attr('fill', 'white');      
+      
+      
+      var topMarks = group.selectAll('.topMarks').data(data);
+      topMarks = topMarks.enter()
+      						.append('circle')
+      						.attr('class','topMarks')
+      						.merge(topMarks)
+      						.attr('cx', function(d){return xScale(xValue(d)) + xScale.bandwidth()/2;})
+      						.attr('cy', function(d){return yScale(yValueTop(d));})
+      						.attr('r', function(d){return Math.sqrt(height * d.Population/(1000000*600));})
+      						.attr('fill', 'rgba(255,123,50,.2)');
+      
+
+      		
+      						
+        topMarks.on("mouseover", function(d) {
+          		d3.select(this)
+              	.transition()
+              	.attr('fill', 'orange')
+              	.duration(100);
+
+          
+          	div.transition()
+            		.duration(50)
+            		.style('opacity', 1);
+            
+            div.html(d.Country + " Pop: " + d.Population);
+          
+						var xPosition = d3.mouse(this)[0];
+						var yPosition = d3.mouse(this)[1];
+			//console.log(d3.mouse(this)[0], d3.mouse(this)[1], "HHHHHHHHH");
+						div.attr('transform', `translate(${xPosition},${yPosition})`);          
+
+          
+        			
+        })
+          .on("mouseout",function(d){
+          d3.select(this)
+            .transition()
+            .attr('fill', 'rgba(255,123,50,.2)')
+            .duration(50);
+          
+        	div.transition().style('opacity', 0);
+        
+        }
+             
+             );;
+      
+      
+     
+
+		
+
+
+      
+      var bandwidth = xScale.bandwidth();
+      var connectingMarks = group.selectAll('.connectingMarks').data(data);
+      		connectingMarks = connectingMarks.enter()
+          									.append('rect')
+          									.attr('class', 'connectingMarks')
+          									.merge(connectingMarks)
+          									.attr('x', function(d){return xScale(xValue(d));})
+														.attr('y', function(d){return yScale(yValueTop(d));})  
+          									.attr('width', function(d){return xScale.bandwidth();})
+          									.attr('height', function(d){return innerHeight - yScale(yValueTop(d) - yValueBottom(d));})
+          										.on('mouseover', function(d){
+            
+            										d3.select(this)
+                                	.transition()
+                                	.attr("fill", "gray")
+                                	.duration(50);
+            
+            
+            
+          })
+          										.on('mouseout', function(d){d3.select(this).transition()
+                                                        .attr('fill','black')
+                                                        .duration(50);
+                                                         
+                                                        
+                                                         
+                                                         });
+          									
+          									
+      var bottomMarks = group.selectAll('.bottomMarks').data(data);
+      		bottomMarks = bottomMarks.enter()
+          							.append('line')
+          							.attr('class', 'bottomMarks')
+          							.merge(bottomMarks)
+          							.attr('x1', function(d){return(xScale(xValue(d)) + bandwidth/2);})
+          							.attr('x2', function(d){return(xScale(xValue(d)) + bandwidth/2);})
+          							.attr('y1', function(d){return yScale(yValueBottom(d));})
+          							.attr('y2', function(d){return yScale(1500) ;})
+          							.attr('stroke','black')
+          							.attr('stroke-dasharray','5,2')
+          							.append('svg:title')
+          							.text(function(d){return "Country: " + d.Country
+                                          						+ "\nCumulative GHG emissions: "
+                                         							+ d.GHG_Cum; + " tonnes"});
+      
+
+     var xAxisG = group.selectAll('.xAxis').data(data);
+      	xAxisG = xAxisG.enter()
+        					.append('g')
+        					.style('font-size', '7px')
+        					.style('font', 'Times')
+        					.merge(xAxisG)
+        					.attr('transform', `translate(0, ${yScale(innerHeight)})`);
+      
+      var xAxis = d3.axisBottom()
+      							.scale(xScale)
+                    .ticks(5)
+      							.tickSize(width/50 + ' em');
+      
+     var yAxisG = group.selectAll('.yAxis').data(data);
+      	yAxisG = yAxisG.enter()
+        					.append('g')
+        					.style('font-size', '15px')
+        					.style('font', 'Helvetica')
+        					.merge(yAxisG)
+        					.attr('transform',`translate(${xScale(0)},0)`)
+        					;         
+
+      var yAxis = d3.axisLeft()
+      						.scale(yScale)
+      						.ticks(5)
+      						.tickSize(width/100 + ' em')
+      						.tickFormat(d3.format('.0s'))
+      						;
+      
+      
+      
+      xAxisG.call(xAxis);
+      yAxisG.call(yAxis);
+        svg.exit().remove()
+        group.exit().remove(); 
+      	topMarks.exit().remove();
+      	connectingMarks.exit().remove();
+      	bottomMarks.exit().remove();
+      	annotation.exit().remove();
+          
+          
+    }
+  
+   var rows = function(d){
+     d.Country = d.Country;
+     d.Year = +d.Year;
+     d.GHG = +d.GHG;
+     d.GHG_Cum = +d.GHG_Cum;
+     d.Population = +d.Population;
+     d.Final_Rank = +d.Final_Rank;
+     return(d);};
+   
+d3.csv('data/Data3.csv', rows, function(array){return(render(array, 2013));})
+
+  </script>
+</body>
