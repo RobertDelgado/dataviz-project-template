@@ -12,8 +12,6 @@
     .connectingMarks {}
     .annotation{}
     .xAxis, .yAxis {}
-	.floatingLabel {}
-	.graphContainer {}
     
  
 
@@ -52,6 +50,7 @@
   function generalUpdate(obj, elt, data,  attributes)
 	{
 			var className  = ((elt.hasOwnProperty('cl'))? elt.class: elt.obj);
+			console.log(className)
 			var output = obj.selectAll(className)
 							.data(data);
 
@@ -97,7 +96,7 @@ var output = obj;
       
 			data = data.filter(function(d){return d.Year == year1; });
       
-      //console.log(data);
+      console.log(data);
       
      var yValueBottom = d => d.GHG_Cum - d.GHG;
      var yValueTop = d  => d.GHG_Cum
@@ -108,42 +107,21 @@ var output = obj;
 		 svg = attributes(svg,{height:height,width:width} );
 
       
-
+     var div = body
+      			.selectAll('div')
+      			.data([null]);
+				
+				
+      div = div.enter()
+      				.append('div')
+      				.attr("class", "tooltip")
+    					.style("opacity", 0);
 
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
 	  svg = attributes(svg,{height:height,width:width} );
 
-	  
-	  
-	  var floatingLabel = svg
-      	.selectAll('.floatingLabel')
-      	.data([null]);
-				
-				
-      floatingLabel = floatingLabel.enter()
-      		.append('g')
-      				.attr("class", "floatingLabel")
-    					.style("display", "none");
-		floatingLabel.append("rect")
-			.attr("width", 60)
-			.attr("height", 20)
-			.attr("fill", "white")
-			.style("opacity", .5);
-			
-		var floatingText = floatingLabel.append("text")
-			.attr("x", 30)
-			.attr("dy", "1.2em")
-			.style("text-anchor", "middle")
-			.attr("font-size", "12px")
-			.attr("font-weight", "bold");
-			
-		var popMarker = floatingText.append('tspan');
-		var cumGHGMarker = floatingText.append('tspan');
-			
 
-	  
-
-     var group = generalUpdate(svg, {obj:'g', cl: '.graphContainer'},[null]);
+     var group = generalUpdate(svg, {obj:'g'},[null]);
 		group = attributes(group, {height:innerHeight
                                           , width: innerWidth
                                           , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
@@ -162,7 +140,7 @@ var output = obj;
 
 	 var annotation = generalUpdate(group, {cl: '.annotation', obj:'text'}, [null]);
 	 annotation = generalEnter(annotation, {cl: '.annotation', obj:'text'});
-	 annotation = annotation.text("GHG emissions for " + numberOfCountries +" most prolific emitters in " + year1);
+	 annotation = annotation.text("GHG emissions for " + numberOfCountries +" largest countries " + year1);
 	 annotation = attributes(annotation, {
 											stroke: 'black'
 											, transform: 'translate(100, 100)'
@@ -183,20 +161,38 @@ var output = obj;
 	  
         		
    ///For interactivity.  I may modularize this   						
-        topMarks = topMarks.on("mouseover", function() { floatingLabel.style("display", null); })
-    .on("mouseout", function() { floatingLabel.style("display", "none"); })
-    .on("mousemove", function(d) {
-      //console.log(d);
-	  var thisX = d3.mouse(this)[0];
-	  var thisY = d3.mouse(this)[1];
-	  var yOffset = (thisY < 100 ? -5 : -50 )
-	  console.log(yOffset, thisY, yScale(1000000000));
-      var xPosition = thisX + 200;
-      var yPosition = thisY + yOffset;
-      floatingLabel.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-	  popMarker.text("Pop (M): " + d.Population/1000000).attr("x", "0").attr("dy", "1.2em");
-      cumGHGMarker.text("Cum Emiss: " + d.GHG_Cum).attr("x", "0").attr("dy", "1.2em");
-    });
+        topMarks = topMarks.on("mouseover", function(d) {
+          		d3.select(this)
+              	.transition()
+              	.attr('fill', 'orange')
+              	.duration(100);
+
+          
+          	div.transition()
+            		.duration(50)
+            		.style('opacity', 1);
+            
+            div.html(d.Country + " Pop: " + d.Population);
+          
+						var xPosition = d3.mouse(this)[0];
+						var yPosition = d3.mouse(this)[1];
+			//console.log(d3.mouse(this)[0], d3.mouse(this)[1], "HHHHHHHHH");
+						div.attr('transform', `translate(${xPosition},${yPosition})`);          
+
+          
+        			
+        })
+          .on("mouseout",function(d){
+          d3.select(this)
+            .transition()
+            .attr('fill', 'rgba(255,123,50,.2)')
+            .duration(50);
+          
+        	div.transition().style('opacity', 0);
+        
+        }
+             
+             );
       
   
       var bandwidth = xScale.bandwidth();
@@ -208,6 +204,17 @@ var output = obj;
 								  , width: function(d){return xScale.bandwidth();}
 								  , height: function(d){return innerHeight - yScale(yValueTop(d) - yValueBottom(d));}});
 								  
+	  connectingMarks = connectingMarks.on('mouseover', function(d){
+            
+            										d3.select(this)
+													.transition()
+													.attr("fill", "gray")
+													.duration(50);
+										 })
+										.on('mouseout', function(d){d3.select(this).transition()
+                                                        .attr('fill','black')
+                                                        .duration(50);
+                                                         });
 
           									
 	var bottomMarks = generalUpdate(group, {cl:'.bottomMarks', obj: 'line'}, data);
