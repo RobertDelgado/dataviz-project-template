@@ -81,6 +81,24 @@ var output = obj;
 	return(output);
 }
     
+	
+	
+///for zooming	
+function zoomed() {
+  group.attr("transform", d3.event.transform);
+  gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+  gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+}
+
+
+//for zooming
+function resetted() {
+  svg.transition()
+      .duration(750)
+      .call(zoom.transform, d3.zoomIdentity);
+}
+	
+	
     function render(data, year1)
     {
       var numberOfCountries = 10;
@@ -113,6 +131,7 @@ var output = obj;
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
 	  svg = attributes(svg,{height:height,width:width} );
 
+	  
 	  
 	  
 	  var floatingLabel = svg
@@ -156,9 +175,28 @@ var output = obj;
                                           , width: innerWidth
                                           , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
       
-      
+    ///For zooming  
      
+	function zoomed() {
+	  group.attr("transform", d3.event.transform);
+	  gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+	  gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+	}
 
+
+
+	 ///For zooming 
+	 var zoom = d3.zoom()
+    .scaleExtent([1, 40])
+    .translateExtent([[-100, -100], [width + 90, height + 100]])
+    .on("zoom", zoomed);
+	
+	
+	
+	
+	
+	
+	
 
 	 var annotation = generalUpdate(group, {cl: '.annotation', obj:'text'}, [null]);
 	 annotation = generalEnter(annotation, {cl: '.annotation', obj:'text'});
@@ -263,6 +301,8 @@ var output = obj;
       	bottomMarks.exit().remove();
       	annotation.exit().remove();
           
+		  
+	svg.call(zoom);
           
     }
   
