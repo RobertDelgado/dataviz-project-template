@@ -6,67 +6,12 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script>
   <style>
     body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
-    .xAxisText, .yAxisText{font-size: 30}
     .topMarks {}
-    .topMarks1990 {}
-    .topMarks1991 {}
-    .topMarks1992 {}
-    .topMarks1993 {}
-    .topMarks1994 {}
-    .topMarks1995 {}
-    .topMarks1996 {}
-    .topMarks1997 {}
-    .topMarks1998 {}
-    .topMarks1999 {}
-    .topMarks2001 {}
-    .topMarks2002 {}
-    .topMarks2003 {}
-    .topMarks2004 {}
-    .topMarks2005 {}
-    .topMarks2006 {}
-    .topMarks2007 {}
-    .topMarks2008 {}
-    .topMarks2009 {}
-    .topMarks2010 {}
-    .topMarks2011 {}
-    .topMarks2012 {}
-    .topMarks2013 {}
-
-    .bottomMarks1990 {}
-    .bottomMarks1991 {}
-    .bottomMarks1992 {}
-    .bottomMarks1992 {}
-    .bottomMarks1993 {}
-    .bottomMarks1994 {}
-    .bottomMarks1995 {}
-    .bottomMarks1996 {}
-    .bottomMarks1997 {}
-    .bottomMarks1998 {}
-    .bottomMarks1999 {}
-    .bottomMarks2000 {}
-    .bottomMarks2001 {}
-    .bottomMarks2002 {}
-    .bottomMarks2003 {}
-    .bottomMarks2004 {}
-    .bottomMarks2005 {}
-    .bottomMarks2006 {}
-    .bottomMarks2007 {}
-    .bottomMarks2008 {}
-    .bottomMarks2009 {}
-    .bottomMarks2010 {}
-    .bottomMarks2011 {}
-    .bottomMarks2012 {}
-    .bottomMarks2013 {}
-    
-    
+    .bottomMarks {}
     .bottomMarks:hover{stroke:gray; stroke-width:.15em;}
     .connectingMarks {}
-    .connectingMarks1990 {}
-    .connectingMarks2001 {}
     .annotation{}
     .xAxis, .yAxis {}
-    .xAxis1990, .yAxis1990 {}
-    .xAxis2001, .yAxis2001 {}
 	.floatingLabel {}
 	.graphContainer {}
     
@@ -95,8 +40,8 @@
   <script>
     // Feel free to change or delete any of the code you see in this editor!
 
-    var height = 900;
-    var width = 10000;
+    var height = 500;
+    var width = 960;
     var margin = {top: 20, bottom: 20, left:50, right:20};
     var innerHeight = height - margin['top'];
     var innerWidth = height - margin['left'];
@@ -137,30 +82,40 @@ var output = obj;
 }
     
 	
-function exitObjects(arr)
-{
-  for(name in arr)
-    {
-      if(arr.hasOwnProperty(name))
-      {
-     		arr[name].exit().remove();    
-      }
-    }
-  
+	
+///for zooming	
+/*function zoomed() {
+  group.attr("transform", d3.event.transform);
+  //gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+  //gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+}*/
+
+
+//for zooming
+function resetted() {
+  svg.transition()
+      .duration(750)
+      .call(zoom.transform, d3.zoomIdentity);
 }
-
-
-
-
 	
 	
-    function render(data)
+    function render(data, year1)
     {
-
-      var graphWidth = 200
-      var graphHeight = 200
+      var numberOfCountries = 10;
+      data = data.sort(function(x,y){return(x.Final_Rank - y.Final_Rank);});
+      data = data.filter(function(d){return d.Final_Rank <= numberOfCountries;});
       var xValue = d => d.Country;//function(d){return d.Country;}
-
+      var xScale = d3.scaleBand().padding(.90);
+      		xScale.domain(data.map(xValue))
+          .range([0,innerWidth]);
+      
+      var yScale = d3.scaleLinear().domain([0,d3.max(data, d => d.GHG_Cum) + 1000])
+      							.range([innerHeight,0]);
+      
+      
+			data = data.filter(function(d){return d.Year == year1; });
+      
+      //console.log(data);
       
      var yValueBottom = d => d.GHG_Cum - d.GHG;
      var yValueTop = d  => d.GHG_Cum
@@ -175,15 +130,11 @@ function exitObjects(arr)
 
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
 	  svg = attributes(svg,{height:height,width:width} );
-      
-      
-      var outerGroup = generalUpdate(svg, {obj: 'g'}, [null], {height: height, width: width});
-      outerGroup = generalEnter(outerGroup, {obj: 'g'});
 
-      
-      
-      
-	  var floatingLabel = outerGroup
+	  
+	
+	  
+	  var floatingLabel = svg
       	.selectAll('.floatingLabel')
       	.data([null]);
 				
@@ -207,51 +158,40 @@ function exitObjects(arr)
 			
 		var popMarker = floatingText.append('tspan');
 		var cumGHGMarker = floatingText.append('tspan');
-      
-      
-      
-      
-	  
-var makeChart = function(data, year1, xOff, yOff)
-{
-	var numberOfCountries = 10; 
-  var translateString = `translate(${xOff},${yOff})`
-  
-  
-  
-  data = data.sort(function(x,y){return(x.Final_Rank - y.Final_Rank);});
-  data = data.filter(function(d){return d.Year == year1; });  
-  data = data.filter(function(d){return d.Final_Rank <= numberOfCountries;});
- 
-  var xScale = d3.scaleBand().padding(.80);
-      		xScale.domain(data.map(xValue))
-          .range([0,graphWidth]);
-  
- // var yScale = d3.scaleLinear().domain([0,d3.max(data, d => d.GHG_Cum) + 1000])
- //     							.range([graphHeight,0]);
+			
 
- var yScale = d3.scaleLinear().domain([0,180000])
-      							.range([graphHeight,0]);
 	  
 
-     var group = generalUpdate(outerGroup, {obj:'g', cl: '.graphContainer'},[null]);
-		group = attributes(group, {height:graphHeight
-                                          , width: graphWidth
-                                          , transform:translateString})
-                               //`translate(${margin['left']}, ${margin['top'] -10})`  });
+     var group = generalUpdate(svg, {obj:'g', cl: '.graphContainer'},[null]);
+		group = attributes(group, {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
 
-    		group = generalEnter(group, {obj: 'g'}, {height:graphHeight
-                                          , width: graphWidth
-                                          , transform:translateString});
-                                          
-
+    		group = generalEnter(group, {obj: 'g'}, {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
 										  
-			group = attributes(group, {height:graphHeight
-                                          , width: graphWidth
-                                 					, transform: translateString});
-                                          
+			group = attributes(group, {height:innerHeight
+                                          , width: innerWidth
+                                          , transform: `translate(${margin['left']}, ${margin['top'] -10})`  });
       
+    ///For zooming  
+     
+	function zoomed() {
+	  group.attr("transform", d3.event.transform);
+	  //gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+	  //gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+	}
 
+
+
+	 ///For zooming 
+	 var zoom = d3.zoom()
+    .scaleExtent([.5, 40])//was 1 40
+    .translateExtent([[-1000, -30], [width + 900, height+30]]) //y [-100, height + 100]
+    .on("zoom", zoomed);
+	
+	
 	
 	
 	
@@ -260,7 +200,7 @@ var makeChart = function(data, year1, xOff, yOff)
 
 	 var annotation = generalUpdate(group, {cl: '.annotation', obj:'text'}, [null]);
 	 annotation = generalEnter(annotation, {cl: '.annotation', obj:'text'});
-	 annotation = annotation.text(year1);
+	 annotation = annotation.text("GHG emissions for " + numberOfCountries +" most prolific emitters in " + year1);
 	 annotation = attributes(annotation, {
 											stroke: 'black'
 											, transform: 'translate(100, 100)'
@@ -268,23 +208,17 @@ var makeChart = function(data, year1, xOff, yOff)
 											, fill: 'white'}
 							);
   
-     
-      var topMarks = generalUpdate(group, {cl: ".topMarks"+year1, obj: "circle"}, data);
-	  topMarks = generalEnter(topMarks,{cl: ".topMarks" + year1, obj: "circle"});
+      
+      var topMarks = generalUpdate(group, {cl: ".topMarks", obj: "circle"}, data);
+	  topMarks = generalEnter(topMarks,{cl: ".topMarks", obj: "circle"});
 	  topMarks = topMarks.merge(topMarks);
 	  topMarks = attributes(topMarks,{cx: function(d){return xScale(xValue(d)) + xScale.bandwidth()/2;}
 									, cy: function(d){return yScale(yValueTop(d));}
-									, r:  function(d){return Math.sqrt(height * d.Population/(1000000*600 *5));}
+									, r:  function(d){return Math.sqrt(height * d.Population/(1000000*600));}
 									, fill: 'rgba(255,123,50,.2)'
 	  
 	  } );
-	
-  
-  
-  
-  
-  
-  
+	  
         		
    ///For interactivity.  I may modularize this   						
         topMarks = topMarks.on("mouseover", function() { floatingLabel.style("display", null); })
@@ -295,36 +229,27 @@ var makeChart = function(data, year1, xOff, yOff)
 	  var thisY = d3.mouse(this)[1];
 	  var yOffset = (thisY < 100 ? -5 : -50 )
 	  console.log(yOffset, thisY, yScale(1000000000));
-      var xPosition = thisX;
-      var yPosition = thisY; //+ yOffset;
+      var xPosition = thisX + 200;
+      var yPosition = thisY + yOffset;
       floatingLabel.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
 	  popMarker.text("Pop (M): " + d.Population/1000000).attr("x", "0").attr("dy", "1.2em");
       cumGHGMarker.text("Cum Emiss: " + d.GHG_Cum).attr("x", "0").attr("dy", "1.2em");
     });
-  
-  
-  
-  
-  
-  
-  
-  
-  
       
   
       var bandwidth = xScale.bandwidth();
-	  var connectingMarks = generalUpdate(group, {cl: '.connectingMarks' + year1, obj: 'rect'}, data);
-	  connectingMarks = generalEnter(connectingMarks, {cl: '.connectingMarks' + year1, obj: 'rect'} );
-	  
+	  var connectingMarks = generalUpdate(group, {cl: '.connectingMarks', obj: 'rect'}, data);
+	  connectingMarks = generalEnter(connectingMarks, {cl: '.connectingMarks', obj: 'rect'} );
+	  connetingMarks = connectingMarks.merge(connectingMarks);
 	  connectingMarks = attributes(connectingMarks, {x:function(d){return xScale(xValue(d));}
 								  ,y:function(d){return yScale(yValueTop(d));}  
 								  , width: function(d){return xScale.bandwidth();}
-								  , height: function(d){return graphHeight - yScale(yValueTop(d) - yValueBottom(d));}});
+								  , height: function(d){return innerHeight - yScale(yValueTop(d) - yValueBottom(d));}});
 								  
 
           									
-	var bottomMarks = generalUpdate(group, {cl:'.bottomMarks' + year1, obj: 'line'}, data);
-		bottomMarks = generalEnter(bottomMarks, {cl:'.bottomMarks' + year1, obj: 'line'} );
+	var bottomMarks = generalUpdate(group, {cl:'.bottomMarks', obj: 'line'}, data);
+		bottomMarks = generalEnter(bottomMarks, {cl:'.bottomMarks', obj: 'line'} );
 		bottomMarks = bottomMarks.merge(bottomMarks);
 		bottomMarks = attributes(bottomMarks, {
 								x1: function(d){return(xScale(xValue(d)) + bandwidth/2);}
@@ -334,14 +259,15 @@ var makeChart = function(data, year1, xOff, yOff)
 								, stroke: 'black'
 								, 'stroke-dasharray': '5,2'		
 		});
-  
-  
-  
+		bottomMarks = bottomMarks.append('svg:title')
+								 .text(function(d){return "Country: " + d.Country
+                                          						+ "\nCumulative GHG emissions: "
+                                         							+ d.GHG_Cum; + " tonnes"});
 
-	 var xAxisG = generalUpdate(group, {obj: 'g', cl: '.xAxis' + year1}, [null]); 
-	 xAxisG = generalEnter(xAxisG, {obj: 'g', cl: '.xAxis' + year1});
+	 var xAxisG = generalUpdate(group, {obj: 'g', cl: '.xAxis'}, [null]); 
+	 xAxisG = generalEnter(xAxisG, {obj: 'g', cl: '.xAxis'});
 	 xAxisG = xAxisG.style('font-size', '7px').style('font', 'Times').merge(xAxisG);
-	 xAxisG = attributes(xAxisG, {'transform':`translate(0, ${yScale(graphHeight)})`});
+	 xAxisG = attributes(xAxisG, {'transform':`translate(0, ${yScale(innerHeight)})`});
   
       
       var xAxis = d3.axisBottom()
@@ -356,11 +282,6 @@ var makeChart = function(data, year1, xOff, yOff)
 		 yAxisG = yAxisG.style('font-size', '15px').style('font', 'Helvetica').merge(yAxisG);
 		 yAxisG = attributes(yAxisG, {'transform':`translate(${xScale(0)},0)`});
  
-  var yAxisText = generalUpdate(yAxisG, {obj:'text', cl:'.yAxisText'},[null]);
-  		yAxisText = attributes(yAxisText, {text:"GHG", stroke:"black", fill:"black"});
-  		yAxisText = generalEnter(yAxisText, {obj:'text', cl:'.yAxis'});
-  		yAxisText = attributes(yAxisText,{x:yScale(80000), y:xScale(.1), transform:'rotate(-90)', "font-size":width/50});
-
 
       var yAxis = d3.axisLeft()
       						.scale(yScale)
@@ -369,65 +290,20 @@ var makeChart = function(data, year1, xOff, yOff)
       						.tickFormat(d3.format('.0s'))
       						;
       
-      topMarks.exit().remove();
-  		connectingMarks.exit().remove();
-  		bottomMarks.exit().remove();
-  		xAxisG.exit().remove();
-  		yAxisG.exit().remove();
-  
+      
       
       xAxisG.call(xAxis);
       yAxisG.call(yAxis);
- 
- 
-  		return({svgObj : svg, groupObj: group, topMarksObj: topMarks, connectingMarksObj: connectingMarks, bottomMarksObj: bottomMarks, annotationObj: annotation, xAxisObj: xAxisG, yAxisObj: yAxisG});
-
+        svg.exit().remove()
+        group.exit().remove(); 
+      	topMarks.exit().remove();
+      	connectingMarks.exit().remove();
+      	bottomMarks.exit().remove();
+      	annotation.exit().remove();
           
 		  
-
-  
-  
-  
-  
-}
-
-
-var offSet = 250
-var objectList = {}
-for(var y = 1990; y<= 2013; y++)
- {
-   objectList[toString(y)] = makeChart(data, y, 250*(y-1990)+20, 150)
-   
- }
-
-      
-		    ///For zooming  
-     
-	function zoomed() {
-	  outerGroup.attr("transform", d3.event.transform);
-	  //gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
-	  //gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
-	}
-
-
-
-	 ///For zooming 
-	 var zoom = d3.zoom()
-    .scaleExtent([1, 40])
-    .translateExtent([[-100, 0], [width + 9000, height]])
-    .on("zoom", zoomed);
-      
-	svg.call(zoom);	
-	
-	//for zooming
-function resetted() {
-  svg.transition()
-      .duration(750)
-      .call(zoom.transform, d3.zoomIdentity);
-}
-
-
-
+	svg.call(zoom);
+          
     }
   
    var rows = function(d){
@@ -439,7 +315,7 @@ function resetted() {
      d.Final_Rank = +d.Final_Rank;
      return(d);};
    
-d3.csv('data/Data3.csv', rows, function(array){return(render(array));})
+d3.csv('data/Data3.csv', rows, function(array){return(render(array, 2013));})
 
   </script>
 </body>
