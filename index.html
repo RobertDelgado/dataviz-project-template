@@ -7,7 +7,9 @@
   <style>
     body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
     .xAxisText, .yAxisText{font-size: 30}
-    .topMarks {}
+    
+
+	
     .topMarks1990 {}
     .topMarks1991 {}
     .topMarks1992 {}
@@ -58,6 +60,15 @@
     .bottomMarks2012 {}
     .bottomMarks2013 {}
     
+	.yAxis1990 {}
+	.yAxis1991 {}
+	.yAxis1992 {}
+	.yAxis1993 {}
+	.yAxis1994 {}
+	.yAxis1995 {}
+	.yAxis1996 {}
+	.yAxis1997 {}
+	.yAxis1998 {}
     
     .bottomMarks:hover{stroke:gray; stroke-width:.15em;}
     .connectingMarks {}
@@ -342,23 +353,23 @@ var makeChart = function(data, year1, xOff, yOff)
 	 xAxisG = generalEnter(xAxisG, {obj: 'g', cl: '.xAxis' + year1});
 	 xAxisG = xAxisG.style('font-size', '7px').style('font', 'Times').merge(xAxisG);
 	 xAxisG = attributes(xAxisG, {'transform':`translate(0, ${yScale(graphHeight)})`});
-  
+	
       
       var xAxis = d3.axisBottom()
       							.scale(xScale)
                     .ticks(5)
-      							.tickSize(width/50 + ' em');
+      							.tickSize(graphWidth/100 + ' em');
      
 
 
-	 var yAxisG = generalUpdate(group, {obj: 'g', cl: '.yAxis'}, [null]);
-		 yAxisG = generalEnter(yAxisG, {obj: 'g', cl: '.yAxis'});
+	 var yAxisG = generalUpdate(group, {obj: 'g', cl: '.yAxis' + year1}, [null]);
+		 yAxisG = generalEnter(yAxisG, {obj: 'g', cl: '.yAxis' + year1});
 		 yAxisG = yAxisG.style('font-size', '15px').style('font', 'Helvetica').merge(yAxisG);
 		 yAxisG = attributes(yAxisG, {'transform':`translate(${xScale(0)},0)`});
  
-  var yAxisText = generalUpdate(yAxisG, {obj:'text', cl:'.yAxisText'},[null]);
-  		yAxisText = attributes(yAxisText, {text:"GHG", stroke:"black", fill:"black"});
-  		yAxisText = generalEnter(yAxisText, {obj:'text', cl:'.yAxis'});
+  var yAxisText = generalUpdate(yAxisG, {obj:'text', cl:'.yAxisText' + year1},[null]);
+  		yAxisText = attributes(yAxisText, {text:"GHG", stroke:"black", fill:"black", "stroke-width":"2em"});
+  		yAxisText = generalEnter(yAxisText, {obj:'text', cl:'.yAxisText' + year1});
   		yAxisText = attributes(yAxisText,{x:yScale(80000), y:xScale(.1), transform:'rotate(-90)', "font-size":width/50});
 
 
@@ -368,7 +379,16 @@ var makeChart = function(data, year1, xOff, yOff)
       						.tickSize(width/100 + ' em')
       						.tickFormat(d3.format('.0s'))
       						;
-      
+
+
+
+	xAxisG.call(xAxis);
+	xAxisG.selectAll('text')
+		.attr('transform', 'rotate(-45)'); //Why must this be after the call to xAxis
+		//.attr('text-anchor', 'end');
+
+
+							
       topMarks.exit().remove();
   		connectingMarks.exit().remove();
   		bottomMarks.exit().remove();
@@ -376,7 +396,7 @@ var makeChart = function(data, year1, xOff, yOff)
   		yAxisG.exit().remove();
   
       
-      xAxisG.call(xAxis);
+      
       yAxisG.call(yAxis);
  
  
