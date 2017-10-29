@@ -92,7 +92,7 @@
     
    var height = 500;
    var width = 960;
-   var margin = {top: 50, bottom: 40, left:20, right:20};
+   var margin = {top: 50, bottom: 40, left:80, right:20};
    var innerHeight = height - margin['top'] - margin['bottom'];
    var innerWidth = height - margin['left'] - margin['right'];
 
@@ -184,16 +184,41 @@ var output = obj;
       outerGroup = generalEnter(outerGroup, {obj: 'g', cl:'.outerGroup'});
       outerGroup = attributes(outerGroup, {height: innerHeight
                                            , width: innerWidth
-                                           , transform: `translate(${margin['left']}, ${margin['top'] -100})`});
+                                           , transform: `translate(${margin['left']}, ${margin['top'] -120})`});
       outerGroup = outerGroup.merge(outerGroup);
 
  
       
-
+	  var xAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.xAxisG'}, [null]);
+	  xAxisG = generalEnter(xAxisG, {obj: 'g', cl:'.xAxisG'});
+	  xAxisG = xAxisG.merge(xAxisG);
+	  xAxisG.append('text')
+			.text('Country')
+			.attr('stroke','black')
+			.attr('transform',`translate(${innerWidth/2.5},30)`);
+			
+	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)
+	  
+	  var xAxis = d3.axisBottom(xScale);
+		
+	  var yAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.yAxisG'}, [null]);
+	  yAxisG = generalEnter(yAxisG, {obj: 'g', cl:'.yAxisG'});
+	  yaxisG = xAxisG.merge(yAxisG);
+	  //yAxisG.attr('transform', 'rotate(-90)');
+	  yAxisG.append('text')
+	  				.text('GHG emissions (tonnes)')
+					.attr('stroke','black')
+					.attr('transform', 'rotate(-90)')
+					.attr('x',-innerHeight/2.5)
+					.attr('y', -55);
+					
+	  
+	  var yAxis = d3.axisLeft(yScale);
+	
       
       
-     	var topYear = Math.max(Math.min(2013, Math.ceil(year)), 1990);
-      var linkData = data.filter(function(d){return(d.Year == topYear);})
+     var topYear = Math.max(Math.min(2013, Math.ceil(year)), 1990);
+     var linkData = data.filter(function(d){return(d.Year == topYear);})
       
       //console.log(linkData);
       
@@ -311,14 +336,14 @@ var output = obj;
        
       var linkObj = stemObjBottom[yr].selectAll('.link').data(yearData);
       linkObj = linkObj.enter()
-      								.append('line')
-      								.attr('x1',function(d){return(xScale(d.Country) + xScale.bandwidth()/2);})
-      								.attr('x2',function(d){return(xScale(d.Country) + xScale.bandwidth()/2);})
-      								.attr('y1', function(d){return(yScale(d.GHG_Cum));})
-      								.attr('y2', function(d){return(yScale(d.GHG_Cum - d.GHG));})
-      								.attr('stroke-dasharray', '5,4')
-      								.attr('stroke', 'black')
-      								.attr('stroke-width', 1)
+      				.append('line')
+						.attr('x1',function(d){return(xScale(d.Country) + xScale.bandwidth()/2);})
+      					.attr('x2',function(d){return(xScale(d.Country) + xScale.bandwidth()/2);})
+      					.attr('y1', function(d){return(yScale(d.GHG_Cum));})
+      					.attr('y2', function(d){return(yScale(d.GHG_Cum - d.GHG));})
+      					.attr('stroke-dasharray', '5,4')
+      					.attr('stroke', 'black')
+      					.attr('stroke-width', 1);
        
        
        stemObjBottom[yr].on('mouseover',function(d){
@@ -382,6 +407,8 @@ var output = obj;
          
        })
       stemObjBottom[yr].exit().remove();
+	  
+	  
                             
                            
        
@@ -389,7 +416,8 @@ var output = obj;
      };
       
 
-     
+     xAxisG.call(xAxis);
+	 yAxisG.call(yAxis);
     
      /*var stemObjTop = generalUpdate(outerGroup,{obj:"rect", cl:".stem" + Math.ceil(year)}, fYearData);
      stemObjTop = generalEnter(stemObjTop, {obj:"rect", cl:".stem" + Math.ceil(year)});
