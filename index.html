@@ -176,14 +176,14 @@ var output = obj;
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
 	  svg = attributes(svg,{height:innerHeight,width:innerWidth} );
 	  
-	  var graphTitle = generalUpdate(svg,{obj: 'text', cl: '.graphTitle'}, [null]);
+	  /*var graphTitle = generalUpdate(svg,{obj: 'text', cl: '.graphTitle'}, [null]);
 	  graphTitle = generalEnter(graphTitle, {obj: 'text', cl: '.graphTitle'});
 	  graphTitle = graphTitle.merge(graphTitle);
 	  graphTitle = graphTitle.text(Math.ceil(year))
 							.attr('fill', 'black')
 							.attr('font-size', '4em')
 							.attr('y', 50)
-							.attr('x', 200);
+							.attr('x', 200);*/
 	  
 	  
       
@@ -203,7 +203,7 @@ var output = obj;
 	  xAxisG.append('text')
 			.text('Country')
 			.attr('stroke','black')
-			.attr('transform',`translate(${innerWidth/2.5},30)`);
+			.attr('transform',`translate(${innerWidth/2},${innerHeight})`);
 			
 	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)
 	  
@@ -293,25 +293,26 @@ var output = obj;
      ;
       
       
-      popObj = popObj.append('text')
+      /*popObj = popObj.append('text')
       								.text('Hello')
-      								.style('display','none');
+      								.style('display','none');*/
       
       popObj.exit().remove();      
       
 	  
 	var countryData = data.filter(function(d){return(d.Year == year);});
+		countryData = countryData.sort(function(a,b){return a.Year - b.Year;})
 
 	
-	var yScaleSide = d3.scaleLinear().domain([0,200000])
-									 .range([innerHeight,0]);
+	var yScaleSide = d3.scaleLinear().domain([0,12000])
+									 .range([innerHeight/2.5,0]);
 									 
 	var xScaleSide = d3.scaleLinear().domain([1990, 2013])
-									.range([0,innerWidth]);
+									.range([0,innerWidth/2.5]);
 	
 	
 	var line = d3.line()
-		//.curve(d3.curveLinear)
+		.curve(d3.curveLinear)
 		.x(function(d){ console.log(d.Year); return xScaleSide(d.Year);})
 		.y(function(d){ return yScaleSide(d.GHG); });
 	 
@@ -321,7 +322,7 @@ var output = obj;
      var sideVizG = generalUpdate(outerGroup, {obj:'g', cl:'.sideVizG'}, [null]);      
       sideVizG = generalEnter(sideVizG, {obj:'g', cl:'.sideVizG'});
       sideVizG = sideVizG.merge(sideVizG)
-      sideVizG = sideVizG.attr('transform', 'translate(0, 0)')
+      sideVizG = sideVizG.attr('transform', `translate(${innerWidth/2.5}, ${innerHeight/4.0})`)
 
 
 
@@ -331,12 +332,12 @@ var output = obj;
 	  xAxisGLine.append('text')
 			.text('Year')
 			.attr('stroke','black')
-			.attr('transform',`translate(0,0)`);
+			.attr('transform',`translate(${innerWidth/4.5},30)`);
 			
-	  xAxisGLine = xAxisGLine.attr('transform', `translate(${0},${innerHeight})`);
+	  xAxisGLine = xAxisGLine.attr('transform', `translate(${0},${innerHeight/2.5})`);
 	  
 	  
-	  var xAxisLine = d3.axisBottom(xScale);								
+	  var xAxisLine = d3.axisBottom(xScaleSide);								
 
 	  
 	  
@@ -349,8 +350,8 @@ var output = obj;
 	  				.text('GHG emissions (tonnes)')
 					.attr('stroke','black')
 					.attr('transform', `rotate(-90)`)
-					.attr('x',-innerHeight/2.5)
-					.attr('y', -55);  
+					.attr('x',-innerHeight/20)
+					.attr('y', -45);  
 	var yAxisLine = d3.axisLeft(yScaleSide);
 
 	
@@ -361,9 +362,10 @@ var output = obj;
 		var thisCountryData = data.filter(function(d){return(d.Country == countryData[datum].Country);});
 		//var linePath = line()
 		//console.log("HHHHHHHHHHHHH", thisCountryData);
-		outerGroup.append('path').datum(thisCountryData)
-					//.attr('class','line')
+		sideVizG.append('path').datum(thisCountryData)
+					.attr('class','line')
 					.style('stroke', 'red')
+					.style('fill','none')
 					.attr("d",line);//.attr('stroke','black');
 		
 	};
