@@ -145,7 +145,7 @@ var output = obj;
       
       
       
-      var colorScale = d3.scaleOrdinal().range(d3.schemeCategory10);
+      
       
       var xValue = d => d.Country;//function(d){return d.Country;}
   	  var xScale = d3.scaleBand().padding(.80);
@@ -268,8 +268,7 @@ var output = obj;
       
     	popCircle = popObj.append('circle')
       								.attr("r",d => Math.sqrt(d.Population/(1000000)))
-                       .attr("fill", "rgba(10,10,10,.1)");
-					   
+                       .attr("fill", "rgba(10,10,10,.1)")
 
      
         popObj.on('mouseover', function(d){
@@ -281,16 +280,14 @@ var output = obj;
           .style('display',null);
           
         //var thisYear = d3.select(this).attr('cx');
-        //console.log(d3.select(this).data()[0]);
+        console.log(d3.select(this).data()[0]);
           
 
         
         
       })
         .on('mouseout', function(d){
-          //d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
-		  
-		  d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
+          d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
           d3.select(this).select('text').style('display','none');
         })
      ;
@@ -316,8 +313,7 @@ var output = obj;
 	
 	var line = d3.line()
 		.curve(d3.curveLinear)
-		.x(function(d){ //console.log(d.Year); 
-		return xScaleSide(d.Year);})
+		.x(function(d){ console.log(d.Year); return xScaleSide(d.Year);})
 		.y(function(d){ return yScaleSide(d.GHG); });
 	 
 
@@ -359,21 +355,18 @@ var output = obj;
 	var yAxisLine = d3.axisLeft(yScaleSide);
 
 	
-	var countryLine = {}
+	
 	
 	for(var datum = 0; datum < countryData.length; datum++)
 	{
 		var thisCountryData = data.filter(function(d){return(d.Country == countryData[datum].Country);});
-		thisCountryData = thisCountryData.sort(function(a,b){return(a.Year - b.Year);});
-		console.log(thisCountryData[0].Country, colorScale(thisCountryData[0].Country))
 		//var linePath = line()
 		//console.log("HHHHHHHHHHHHH", thisCountryData);
-		countryLine[thisCountryData[0].Country] = sideVizG.append('path').datum(thisCountryData)
+		sideVizG.append('path').datum(thisCountryData)
 					.attr('class','line')
-					.style('stroke', function(d){return colorScale(thisCountryData[0].Country);})
+					.style('stroke', 'red')
 					.style('fill','none')
 					.attr("d",line);//.attr('stroke','black');
-					
 		
 	};
 	
@@ -386,9 +379,7 @@ var output = obj;
        stemObjBottom[yr] = outerGroup.selectAll('.stem'  + yr).data([null]);
        stemObjBottom[yr] = stemObjBottom[yr].enter().append('g')
          						.attr('class','stem' + yr);
-       stemObjBottom[yr]
-	   .merge(stemObjBottom[yr])
-		
+       stemObjBottom[yr].merge(stemObjBottom[yr]);
        stemObjBottom[yr].exit().remove();
        
 
@@ -403,9 +394,8 @@ var output = obj;
 
        var circleObjs = stemObjBottom[yr].selectAll('circle').data(yearData);
        circleObjs =circleObjs.enter().append('circle')
-       									.attr('r',2)
-       									//.attr('fill','rgba(0,0,0,.2)')
-										.attr('fill', function(d){return colorScale(d.Country);})
+       									.attr('r',4)
+       									.attr('fill','rgba(0,0,0,.2)')
        									.attr('cx',d => xScale(xValue(d)) + xScale.bandwidth()/2)
        									.attr('cy', d =>{return yScale(d.GHG_Cum);});
        
@@ -419,19 +409,18 @@ var output = obj;
       					.attr('y2', function(d){return(yScale(d.GHG_Cum - d.GHG));})
       					.attr('stroke-dasharray', '5,4')
       					.attr('stroke', 'black')
-						.attr('stroke', function(d){return colorScale(d.Country);})
       					.attr('stroke-width', 1);
        
        
        stemObjBottom[yr].on('mouseover',function(d){
         var className = "stem" + yr
         d3.select(this).selectAll('circle')
-          //.attr("fill", "blue")
+          .attr("fill", "blue")
         	.attr('r',6);
          
         d3.select(this).selectAll('line')
         	.attr('stroke-width', 3)
-        	//.attr('stroke', 'blue')
+        	.attr('stroke', 'blue')
         	.attr('stroke-dasharray','none');
         	//.attr('r',d=>{return(Math.sqrt(d.Population/(1000000)));})
 			
@@ -455,19 +444,13 @@ var output = obj;
 				floatingTSpan.exit().remove();*/
        })       
        .on('mouseout',function(d){
-        var className = "stem" + yr;
-		var country = d3.select(this).selectAll('circle').data();
-		//console.log(country);
-		//var color = colorScale(d3.select(this).data().Country);
-		 
+        var className = "stem" + yr
         d3.select(this).selectAll('circle')
-			//.attr('fill', function(d){return(colorScale(d.Country));})
-          //.attr("fill", 'rgba(0,0,0,.2)')
-        	.attr('r',3);
+          .attr("fill", 'rgba(0,0,0,.2)')
+        	.attr('r',4);
        	d3.select(this).selectAll('line')
         	.attr('stroke-width', 1)
-        	//.attr('stroke', 'black')
-			//.attr('stroke',color)
+        	.attr('stroke', 'black')
         	.attr('stroke-dasharray', '5,4');
        	
 
