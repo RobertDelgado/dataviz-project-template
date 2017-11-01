@@ -203,7 +203,8 @@ var output = obj;
 	  xAxisG.append('text')
 			.text('Country')
 			.attr('stroke','black')
-			.attr('transform',`translate(${innerWidth/2},${innerHeight})`);
+			.attr('transform',`translate(${innerWidth/2},${innerHeight/10})`);
+			
 			
 	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)
 	  
@@ -228,6 +229,7 @@ var output = obj;
 					.attr('transform', 'rotate(-90)')
 					.attr('x',-innerHeight/2.5)
 					.attr('y', -55);
+					
 					
 					
 					
@@ -403,7 +405,7 @@ var output = obj;
 
        var circleObjs = stemObjBottom[yr].selectAll('circle').data(yearData);
        circleObjs =circleObjs.enter().append('circle')
-       									.attr('r',2)
+       									.attr('r',3)
        									//.attr('fill','rgba(0,0,0,.2)')
 										.attr('fill', function(d){return colorScale(d.Country);})
        									.attr('cx',d => xScale(xValue(d)) + xScale.bandwidth()/2)
@@ -483,9 +485,15 @@ var output = obj;
      };
       
 
-     xAxisG.call(xAxis);
+     xAxisG.call(xAxis)
+	 .selectAll('.tick text')
+	 .attr('transform','rotate(-45)');
+	 
 	 yAxisG.call(yAxis);
-	 xAxisGLine.call(xAxisLine);
+	 xAxisGLine.call(xAxisLine)
+	 .selectAll('.tick text')
+	 .attr('transform','rotate(-45)');
+	 
 	 yAxisGLine.call(yAxisLine);
     
      /*var stemObjTop = generalUpdate(outerGroup,{obj:"rect", cl:".stem" + Math.ceil(year)}, fYearData);
