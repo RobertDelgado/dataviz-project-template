@@ -63,19 +63,6 @@
  
 
     .textMarker{}
-	
-	
-	
-	      #chart {
-        position: fixed;
-        left: 0px;
-        right: 0px;
-        top: 0px;
-        bottom: 0px;
-      }
-	  
-	  
-	  
    .tooltip{
   position: absolute;           
   text-align: center;           
@@ -87,33 +74,27 @@
   border: 0px;      
   border-radius: 8px;           
   pointer-events: none; 
-    }	 
-	  
-	  
-	  
-	  
-	  
-	  
+    }
   </style>
-	
-	
-
-
 </head>
 
 <body>
-  
-   
-   <div id="chart"></div>
-   
+      <p>
+      <label for="Year" style="display: inline-block; width: 160px; text-align: right">
+             Year = <span id="Year-value" style="width:400px">…</span>
+      </label>
+      <input type="range" min="1990" max="2013" id="Year">
+   </p>
   <script>
 
 
     
     
-   //var height = 500;
-   //var width = 960;
-   
+   var height = 500;
+   var width = 960;
+   var margin = {top: 50, bottom: 40, left:80, right:20};
+   var innerHeight = height - margin['top'] - margin['bottom'];
+   var innerWidth = height - margin['left'] - margin['right'];
 
     
     
@@ -153,27 +134,14 @@ var output = obj;
 
 
 
+	
+
     function render(data, year, countryNum)
     {
 			
-		
-	
-	var chartDiv = document.getElementById("chart");
-	var height = chartDiv.clientHeight;
-    var width = chartDiv.clientWidth//*1.75	;
-	
-	
-	
-	
-	var margin = {top: 50, bottom: 40, left:80, right:20};
-	var innerHeight = height - margin['top'] - margin['bottom'];
-	var innerWidth = width - margin['left'] - margin['right'];
-	console.log(innerHeight, innerWidth);	
-	//var chartDiv = document.getElementById("chart");
-			
-	data = data.filter(function(d){return(d.Year <= Math.ceil(year));});
-    data = data.filter(function(d){return(d.Final_Rank <= countryNum)});
-    data = data.sort(function(a,b){return(a.Final_Rank - b.Final_Rank);})
+			data = data.filter(function(d){return(d.Year <= Math.ceil(year));});
+      data = data.filter(function(d){return(d.Final_Rank <= countryNum)});
+      data = data.sort(function(a,b){return(a.Final_Rank - b.Final_Rank);})
       
       
       
@@ -183,6 +151,8 @@ var output = obj;
   	  var xScale = d3.scaleBand().padding(.80);
       		xScale.domain(data.map(xValue))
 			.range([0,innerWidth]);
+  
+
       
       var yScale = d3.scaleLinear().domain([0,200000])
       							.range([innerHeight,0]);
@@ -196,19 +166,15 @@ var output = obj;
      var yValueTop = d  => d.GHG_Cum
       
       
-     var body = d3.select('div');
-     /*var svg = generalUpdate(body, {obj:'svg'}, [null]);
+     var body = d3.select('body');
+     var svg = generalUpdate(body, {obj:'svg'}, [null]);
 		 svg = attributes(svg,{height:height,width:width} );
 
+      
+
+
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
-	  svg = attributes(svg,{height:height,width:width} );*/
-	  var svg = body.selectAll('svg').data([null]);
-	  svg = svg.enter().append('svg');
-	  svg = svg.merge(svg)
-				.attr('height', height)
-				.attr('width', width);
-				
-	  svg.exit().remove();
+	  svg = attributes(svg,{height:innerHeight,width:innerWidth} );
 	  
 	  /*var graphTitle = generalUpdate(svg,{obj: 'text', cl: '.graphTitle'}, [null]);
 	  graphTitle = generalEnter(graphTitle, {obj: 'text', cl: '.graphTitle'});
@@ -218,42 +184,20 @@ var output = obj;
 							.attr('font-size', '4em')
 							.attr('y', 50)
 							.attr('x', 200);*/
-							
-	 var graphTitle = svg.selectAll('text').data([null]);
-	 graphTitle = graphTitle.enter().append('text')
-					.attr('class', '.graphTitle');
-	 graphTitle = graphTitle.merge(graphTitle)
-					.text(Math.ceil(year))
-					.attr('fill', 'black')
-					.attr('font-size', '4em')
-					.attr('y', 50)
-					.attr('x', 200);
 	  
-	  graphTitle.exit().remove();
+	  
       
       
-      /*var outerGroup = generalUpdate(svg, {obj: 'g'}, [null]);
+      var outerGroup = generalUpdate(svg, {obj: 'g'}, [null]);
       outerGroup = generalEnter(outerGroup, {obj: 'g', cl:'.outerGroup'});
       outerGroup = attributes(outerGroup, {height: innerHeight
                                            , width: innerWidth
-                                           , transform: `translate(${margin['left']}, ${margin['top'] -100})`});
-      outerGroup = outerGroup.merge(outerGroup);*/
-	  
-	  var outerGroup  = svg.selectAll('.outerGroup').data([null]);
-	  outerGroup = outerGroup.enter()
-						.append('g')
-						.attr('class', 'outerGroup');
-						
-	  outerGroup = outerGroup.merge(outerGroup)
-						.attr('height', innerHeight)
-						.attr('width', innerHeight)
-						.attr('transform', `translate(${margin['left']}, ${margin['top'] -100})`);
+                                           , transform: `translate(${margin['left']}, ${margin['top'] -120})`});
+      outerGroup = outerGroup.merge(outerGroup);
 
-	  outerGroup.exit().remove();
-	  
-	  
+ 
       
-	  /*var xAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.xAxisG'}, [null]);
+	  var xAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.xAxisG'}, [null]);
 	  xAxisG = generalEnter(xAxisG, {obj: 'g', cl:'.xAxisG'});
 	  xAxisG = xAxisG.merge(xAxisG);
 	  xAxisG.append('text')
@@ -262,20 +206,7 @@ var output = obj;
 			.attr('transform',`translate(${innerWidth/2},${innerHeight/10})`);
 			
 			
-	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)*/
-	  var xAxisG = outerGroup.selectAll('.xAxisG').data([null]);
-	  xAxisG = xAxisG.enter().append('g')
-					.attr('class', 'xAxisG');
-	  xAxisG = xAxisG.merge(xAxisG);
-	  xAxisG.append('text')
-					 .text('Country')
-					 .attr('stroke', 'black')
-					.attr('transform',`translate(${innerWidth/2},${innerHeight/10})`);
-					
-					
-	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`);
-	  
-	  xAxisG.exit().remove();
+	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)
 	  
 	  var xAxis = d3.axisBottom(xScale);
 	  
@@ -288,7 +219,7 @@ var output = obj;
 
 	  
 		
-	 /* var yAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.yAxisG'}, [null]);
+	  var yAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.yAxisG'}, [null]);
 	  yAxisG = generalEnter(yAxisG, {obj: 'g', cl:'.yAxisG'});
 	  yaxisG = xAxisG.merge(yAxisG);
 	  //yAxisG.attr('transform', 'rotate(-90)');
@@ -297,23 +228,12 @@ var output = obj;
 					.attr('stroke','black')
 					.attr('transform', 'rotate(-90)')
 					.attr('x',-innerHeight/2.5)
-					.attr('y', -55);*/
+					.attr('y', -55);
 					
-	var yAxisG = outerGroup.selectAll('.yAxisG').data([null]);
-	yAxisG = yAxisG.enter()
-				.append('g')
-				.attr('class', 'yAxisG')
-				
-	yAxisG = yAxisG.merge(yAxisG);
-	
-	yAxisG.append('text')
-	  				.text('GHG emissions (tonnes)')
-					.attr('stroke','black')
-					.attr('transform', 'rotate(-90)')
-					.attr('x',-innerHeight/2.5)
-					.attr('y', -55);				
 					
-	yAxisG.exit().remove();
+					
+					
+
 					
 	  
 	  var yAxis = d3.axisLeft(yScale);
@@ -409,7 +329,7 @@ var output = obj;
       sideVizG = generalEnter(sideVizG, {obj:'g', cl:'.sideVizG'});
       sideVizG = sideVizG.merge(sideVizG)
       sideVizG = sideVizG.attr('transform', `translate(${innerWidth/2.5}, ${innerHeight/4.0})`)
-	  sideVizG.exit().remove();
+
 
 
 	  var xAxisGLine = generalUpdate(sideVizG, {obj: 'g', cl:'.xAxisGLine'}, [null]);
@@ -421,7 +341,6 @@ var output = obj;
 			.attr('transform',`translate(${innerWidth/4.5},30)`);
 			
 	  xAxisGLine = xAxisGLine.attr('transform', `translate(${0},${innerHeight/2.5})`);
-	  xAxisGLine.exit().remove();
 	  
 	  
 	  var xAxisLine = d3.axisBottom(xScaleSide);								
@@ -439,9 +358,6 @@ var output = obj;
 					.attr('transform', `rotate(-90)`)
 					.attr('x',-innerHeight/20)
 					.attr('y', -45);  
-					
-	yAxisGLine.exit().remove();
-	
 	var yAxisLine = d3.axisLeft(yScaleSide);
 
 	
@@ -459,8 +375,6 @@ var output = obj;
 					.style('stroke', function(d){return colorScale(thisCountryData[0].Country);})
 					.style('fill','none')
 					.attr("d",line);//.attr('stroke','black');
-					
-		
 					
 		
 	};
@@ -497,10 +411,7 @@ var output = obj;
        									.attr('cx',d => xScale(xValue(d)) + xScale.bandwidth()/2)
        									.attr('cy', d =>{return yScale(d.GHG_Cum);});
        
-      
-
-	  circleObjs.exit().remove();
-	  
+       
       var linkObj = stemObjBottom[yr].selectAll('.link').data(yearData);
       linkObj = linkObj.enter()
       				.append('line')
@@ -628,14 +539,19 @@ var output = obj;
      d.Final_Rank = +d.Final_Rank;
      return(d);};
     
-  //d3.csv("data/Data3.csv", rows , function(data){return(render(data, 2013, 10))})  
-  
-  var redraw = function(){
-		d3.csv("data/Data3.csv", rows,function(data){return(render(data, 2013, 10));})
+  d3.csv("data/Data3.csv", rows , function(data){return(render(data, 2013, 10))})  
+    
+    
+    /*var update = function(Year){
+      console.log(Year);
+      d3.csv("Data3.csv", rows , function(data){return(render(data, Year, 5))});
     };
-  
-   redraw();
-   window.addEventListener("resize", redraw); 
- 
+    //d3.csv("Data3.csv", rows , function(data){return(render(data, 2013, 2))})
+    update(1990)
+    
+    d3.select("#Year").on("input", function() 
+    {
+  			update(+this.value);
+		});*/
   </script>
 </body>
