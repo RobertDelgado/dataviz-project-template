@@ -63,6 +63,19 @@
  
 
     .textMarker{}
+	
+	
+	
+	      #chart {
+        position: fixed;
+        left: 0px;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+      }
+	  
+	  
+	  
    .tooltip{
   position: absolute;           
   text-align: center;           
@@ -74,27 +87,33 @@
   border: 0px;      
   border-radius: 8px;           
   pointer-events: none; 
-    }
+    }	 
+	  
+	  
+	  
+	  
+	  
+	  
   </style>
+	
+	
+
+
 </head>
 
 <body>
-      <p>
-      <label for="Year" style="display: inline-block; width: 160px; text-align: right">
-             Year = <span id="Year-value" style="width:400px">…</span>
-      </label>
-      <input type="range" min="1990" max="2013" id="Year">
-   </p>
+  
+   
+   <div id="chart"></div>
+   
   <script>
 
 
     
     
-   var height = 500;
-   var width = 960;
-   var margin = {top: 50, bottom: 40, left:80, right:20};
-   var innerHeight = height - margin['top'] - margin['bottom'];
-   var innerWidth = height - margin['left'] - margin['right'];
+   //var height = 500;
+   //var width = 960;
+   
 
     
     
@@ -131,28 +150,39 @@ var output = obj;
 	return(output);
 }
     
+var chartDiv = document.getElementById("chart");
 
-
-
-	
 
     function render(data, year, countryNum)
     {
 			
-			data = data.filter(function(d){return(d.Year <= Math.ceil(year));});
-      data = data.filter(function(d){return(d.Final_Rank <= countryNum)});
-      data = data.sort(function(a,b){return(a.Final_Rank - b.Final_Rank);})
+		
+	
+	
+	var height = chartDiv.clientHeight;
+    var width = chartDiv.clientWidth	;
+	
+	
+	
+	
+	var margin = {top: 100, bottom: 40, left:80, right:20};
+	var innerHeight = height - margin['top'] - margin['bottom'];
+	var innerWidth = width - margin['left'] - margin['right'];
+	console.log(innerHeight, innerWidth);	
+	//var chartDiv = document.getElementById("chart");
+			
+	data = data.filter(function(d){return(d.Year <= Math.ceil(year));});
+    data = data.filter(function(d){return(d.Final_Rank <= countryNum)});
+    data = data.sort(function(a,b){return(a.Final_Rank - b.Final_Rank);})
       
       
       
-      
+      var colorScale = d3.scaleOrdinal().range(d3.schemeCategory10);
       
       var xValue = d => d.Country;//function(d){return d.Country;}
   	  var xScale = d3.scaleBand().padding(.80);
       		xScale.domain(data.map(xValue))
-			.range([0,innerWidth]);
-  
-
+			.range([0,innerWidth/2]);
       
       var yScale = d3.scaleLinear().domain([0,200000])
       							.range([innerHeight,0]);
@@ -166,15 +196,21 @@ var output = obj;
      var yValueTop = d  => d.GHG_Cum
       
       
-     var body = d3.select('body');
-     var svg = generalUpdate(body, {obj:'svg'}, [null]);
+     //var body = d3.select('div');
+     /*var svg = generalUpdate(body, {obj:'svg'}, [null]);
 		 svg = attributes(svg,{height:height,width:width} );
 
-      
-
-
       svg = generalEnter(svg, {obj: 'svg'} ); //Why do I need this here and not after svg declaration?
-	  svg = attributes(svg,{height:innerHeight,width:innerWidth} );
+	  svg = attributes(svg,{height:height,width:width} );*/
+	  var svg = d3.select('div').selectAll('svg').data([null]);
+	  svg = svg.enter().append('svg')
+				.attr('height', height)
+				.attr('width', width)
+				.merge(svg);
+	  //svg = svg.merge(svg)
+				
+				
+	  
 	  
 	  /*var graphTitle = generalUpdate(svg,{obj: 'text', cl: '.graphTitle'}, [null]);
 	  graphTitle = generalEnter(graphTitle, {obj: 'text', cl: '.graphTitle'});
@@ -184,28 +220,58 @@ var output = obj;
 							.attr('font-size', '4em')
 							.attr('y', 50)
 							.attr('x', 200);*/
+							
+	 var graphTitle = svg.selectAll('text').data([null]);
+	 graphTitle = graphTitle.enter().append('text')
+					.attr('class', '.graphTitle');
+	 graphTitle = graphTitle.merge(graphTitle)
+					.text(Math.ceil(year))
+					.attr('fill', 'black')
+					.attr('font-size', '4em')
+					.attr('y', 50)
+					.attr('x', 200);
 	  
-	  
+	  graphTitle.exit().remove();
       
       
-      var outerGroup = generalUpdate(svg, {obj: 'g'}, [null]);
+      /*var outerGroup = generalUpdate(svg, {obj: 'g'}, [null]);
       outerGroup = generalEnter(outerGroup, {obj: 'g', cl:'.outerGroup'});
       outerGroup = attributes(outerGroup, {height: innerHeight
                                            , width: innerWidth
-                                           , transform: `translate(${margin['left']}, ${margin['top'] -120})`});
-      outerGroup = outerGroup.merge(outerGroup);
+                                           , transform: `translate(${margin['left']}, ${margin['top'] -100})`});
+      outerGroup = outerGroup.merge(outerGroup);*/
+	  
+	  var outerGroup  = svg.selectAll('.outerGroup').data([null]);
+	  outerGroup = outerGroup.enter()
+						.append('g')
+						.attr('class', 'outerGroup');
+						
+	  outerGroup = outerGroup.merge(outerGroup)
+						.attr('height', innerHeight)
+						.attr('width', innerHeight)
+						.attr('transform', `translate(${margin['left']}, ${margin['top'] -100})`);
 
- 
+	  outerGroup.exit().remove();
+	  
+	  
       
-	  var xAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.xAxisG'}, [null]);
-	  xAxisG = generalEnter(xAxisG, {obj: 'g', cl:'.xAxisG'});
+
+			
+			
+
+	  var xAxisG = outerGroup.selectAll('.xAxisG').data([null]);
+	  xAxisG = xAxisG.enter().append('g')
+					.attr('class', 'xAxisG');
 	  xAxisG = xAxisG.merge(xAxisG);
 	  xAxisG.append('text')
-			.text('Country')
-			.attr('stroke','black')
-			.attr('transform',`translate(${innerWidth/2},${innerHeight})`);
-			
-	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`)
+					 .text('Country')
+					 .attr('stroke', 'black')
+					.attr('transform',`translate(${innerWidth/2},${innerHeight/(10)})`);
+					
+					
+	  xAxisG = xAxisG.attr('transform', `translate(0,${innerHeight})`);
+	  
+	  xAxisG.exit().remove();
 	  
 	  var xAxis = d3.axisBottom(xScale);
 	  
@@ -218,7 +284,7 @@ var output = obj;
 
 	  
 		
-	  var yAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.yAxisG'}, [null]);
+	  /*var yAxisG = generalUpdate(outerGroup, {obj: 'g', cl:'.yAxisG'}, [null]);
 	  yAxisG = generalEnter(yAxisG, {obj: 'g', cl:'.yAxisG'});
 	  yaxisG = xAxisG.merge(yAxisG);
 	  //yAxisG.attr('transform', 'rotate(-90)');
@@ -227,11 +293,30 @@ var output = obj;
 					.attr('stroke','black')
 					.attr('transform', 'rotate(-90)')
 					.attr('x',-innerHeight/2.5)
-					.attr('y', -55);
-					
-					
+					.attr('y', -55);*/
 					
 
+
+
+	  var yAxisG = outerGroup.selectAll('.yAxisG').data([null]);
+	  yAxisG = yAxisG.enter().append('g')
+						.attr('class', 'yAxisG');
+						
+	  yAxisG = yAxisG.merge(yAxisG)
+	  
+	  yAxisG = yAxisG;
+				//.attr('transform', 'rotate(-90)');
+						
+	  
+	  yAxisG.append('text')
+	  				.text('GHG emissions (tonnes)')
+					.attr('stroke','black')
+					.attr('transform', `rotate(-90)`)
+					.attr('x',-innerHeight/20)
+					.attr('y', -45);	  
+					
+					
+	yAxisG.exit().remove();
 					
 	  
 	  var yAxis = d3.axisLeft(yScale);
@@ -239,7 +324,7 @@ var output = obj;
       
       
      var topYear = Math.max(Math.min(2013, Math.ceil(year)), 1990);
-     var linkData = data.filter(function(d){return(d.Year == topYear);})
+     var linkData = data.filter(function(d){return(d.Year == topYear);});
       
       //console.log(linkData);
       
@@ -255,20 +340,33 @@ var output = obj;
      var factor = 1 - (Math.ceil(year) - year);
      //console.log(factor)      
       
-      var popObj = generalUpdate(outerGroup, {obj:"g", cl:".popObj"}, fYearData);
+     /* var popObj = generalUpdate(outerGroup, {obj:"g", cl:".popObj"}, fYearData);
      popObj = generalEnter(popObj, {obj:"g", cl:".popObj"})
      popObj = popObj.merge(popObj);
      popObj = attributes(popObj,{transform: function(d){return( 
       									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');}
                                 , stroke: "black"
                                 , 'stroke-dasharray': '5,5'}
-                                );
+                                );*/
       
+	  var popObj = outerGroup.selectAll('.popObj').data(fYearData);
+	  popObj = popObj.enter()
+				.append('g');
+				
+				
+	  popObj = popObj.merge(popObj)
+				.attr('stroke-dasharray', '5,5')
+				.attr('transform', function(d){return( 
+      									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');})
+				.attr('class', 'popObj')
+				.attr('stroke', 'black');
+				
       
       
     	popCircle = popObj.append('circle')
-      								.attr("r",d => Math.sqrt(d.Population/(1000000)))
-                       .attr("fill", "rgba(10,10,10,.1)")
+					.attr("r",d => Math.sqrt(d.Population/(1000000)))
+                    .attr("fill", "rgba(10,10,10,.1)");
+					   
 
      
         popObj.on('mouseover', function(d){
@@ -280,22 +378,22 @@ var output = obj;
           .style('display',null);
           
         //var thisYear = d3.select(this).attr('cx');
-        console.log(d3.select(this).data()[0]);
+        //console.log(d3.select(this).data()[0]);
           
 
         
         
       })
         .on('mouseout', function(d){
-          d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
+          //d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
+		  
+		  d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
           d3.select(this).select('text').style('display','none');
         })
      ;
       
       
-      /*popObj = popObj.append('text')
-      								.text('Hello')
-      								.style('display','none');*/
+
       
       popObj.exit().remove();      
       
@@ -313,60 +411,79 @@ var output = obj;
 	
 	var line = d3.line()
 		.curve(d3.curveLinear)
-		.x(function(d){ console.log(d.Year); return xScaleSide(d.Year);})
+		.x(function(d){ 
+		return xScaleSide(d.Year);})
 		.y(function(d){ return yScaleSide(d.GHG); });
 	 
 
 
 	 
-     var sideVizG = generalUpdate(outerGroup, {obj:'g', cl:'.sideVizG'}, [null]);      
-      sideVizG = generalEnter(sideVizG, {obj:'g', cl:'.sideVizG'});
-      sideVizG = sideVizG.merge(sideVizG)
-      sideVizG = sideVizG.attr('transform', `translate(${innerWidth/2.5}, ${innerHeight/4.0})`)
 
+	  var sideVizG = outerGroup.selectAll('.sideVizG').data([null]);
+	  sideVizG = sideVizG.enter().append('g')
+					.attr('class', 'sideVizG');
+					
+	  sideVizG = sideVizG.merge(sideVizG);
+	  sideVizG = sideVizG.attr('transform', `translate(${innerWidth/2.5}, ${innerHeight/4.0})`);
+	  sideVizG.exit().remove();
 
-
-	  var xAxisGLine = generalUpdate(sideVizG, {obj: 'g', cl:'.xAxisGLine'}, [null]);
-	  xAxisGLine = generalEnter(xAxisGLine, {obj: 'g', cl:'.xAxisGLine'});
-	  xAxisGLine = xAxisGLine.merge(xAxisGLine);
+	  
+	  var xAxisGLine = sideVizG.selectAll('.xAxisLine').data([null]);
+	  xAxisGLine = xAxisGLine.enter()
+						.append('g')
+						.attr('class', 'xAxisLine');
+						
+	  xAxisGLine = xAxisGLine.merge(xAxisGLine)
+						.attr('transform', `translate(${0},${innerHeight/2.5})` );
+						
 	  xAxisGLine.append('text')
 			.text('Year')
 			.attr('stroke','black')
-			.attr('transform',`translate(${innerWidth/4.5},30)`);
-			
-	  xAxisGLine = xAxisGLine.attr('transform', `translate(${0},${innerHeight/2.5})`);
+			.attr('transform',`translate(${innerWidth/4.5},30)`);					
 	  
 	  
 	  var xAxisLine = d3.axisBottom(xScaleSide);								
 
+	  var yAxisGLine = sideVizG.selectAll('.yAxisGLine').data([null]);
+	  yAxisGLine = yAxisGLine.enter().append('g')
+						.attr('class', 'yAxisGLine');
+						
+	  yAxisGLine = yAxisGLine.merge(yAxisGLine);
+						
+						
 	  
-	  
-	  
- 	  var yAxisGLine = generalUpdate(sideVizG, {obj: 'g', cl:'.yAxisGLine'}, [null]);
-	  yAxisGLine = generalEnter(yAxisGLine, {obj: 'g', cl:'.yAxisGLine'});
-	  yaxisGLine = yAxisGLine.merge(yAxisGLine);
-	  //yAxisG.attr('transform', 'rotate(-90)');
 	  yAxisGLine.append('text')
 	  				.text('GHG emissions (tonnes)')
 					.attr('stroke','black')
 					.attr('transform', `rotate(-90)`)
 					.attr('x',-innerHeight/20)
-					.attr('y', -45);  
+					.attr('y', -45);	  
+	  
+	  
+
+					
+	yAxisGLine.exit().remove();
+	
 	var yAxisLine = d3.axisLeft(yScaleSide);
 
 	
-	
+	var countryLine = {}
 	
 	for(var datum = 0; datum < countryData.length; datum++)
 	{
 		var thisCountryData = data.filter(function(d){return(d.Country == countryData[datum].Country);});
+		thisCountryData = thisCountryData.sort(function(a,b){return(a.Year - b.Year);});
+		console.log(thisCountryData[0].Country, colorScale(thisCountryData[0].Country))
 		//var linePath = line()
 		//console.log("HHHHHHHHHHHHH", thisCountryData);
-		sideVizG.append('path').datum(thisCountryData)
+		countryLine[thisCountryData[0].Country] = sideVizG.append('path').datum(thisCountryData)
 					.attr('class','line')
-					.style('stroke', 'red')
+					.style('stroke', function(d){return colorScale(thisCountryData[0].Country);})
 					.style('fill','none')
 					.attr("d",line);//.attr('stroke','black');
+					
+		
+					
 		
 	};
 	
@@ -374,12 +491,14 @@ var output = obj;
 
      var bandwidthFactor = 1.08
      var stemObjBottom = {};
-     for(var yr = 1990; yr < year; yr++)
+     for(var yr = 1990; yr <= year; yr++)
      {
        stemObjBottom[yr] = outerGroup.selectAll('.stem'  + yr).data([null]);
        stemObjBottom[yr] = stemObjBottom[yr].enter().append('g')
          						.attr('class','stem' + yr);
-       stemObjBottom[yr].merge(stemObjBottom[yr]);
+       stemObjBottom[yr]
+	   .merge(stemObjBottom[yr])
+		
        stemObjBottom[yr].exit().remove();
        
 
@@ -387,19 +506,23 @@ var output = obj;
        
        
      }
-    for(var yr = 1990; yr < year; yr++)
+    for(var yr = 1990; yr <= year; yr++)
      {
        
        var yearData = data.filter(function(d){return(d.Year == yr);})
 
        var circleObjs = stemObjBottom[yr].selectAll('circle').data(yearData);
        circleObjs =circleObjs.enter().append('circle')
-       									.attr('r',4)
-       									.attr('fill','rgba(0,0,0,.2)')
+       									.attr('r',3)
+       									//.attr('fill','rgba(0,0,0,.2)')
+										.attr('fill', function(d){return colorScale(d.Country);})
        									.attr('cx',d => xScale(xValue(d)) + xScale.bandwidth()/2)
        									.attr('cy', d =>{return yScale(d.GHG_Cum);});
        
-       
+      
+
+	  circleObjs.exit().remove();
+	  
       var linkObj = stemObjBottom[yr].selectAll('.link').data(yearData);
       linkObj = linkObj.enter()
       				.append('line')
@@ -409,18 +532,19 @@ var output = obj;
       					.attr('y2', function(d){return(yScale(d.GHG_Cum - d.GHG));})
       					.attr('stroke-dasharray', '5,4')
       					.attr('stroke', 'black')
+						.attr('stroke', function(d){return colorScale(d.Country);})
       					.attr('stroke-width', 1);
        
        
        stemObjBottom[yr].on('mouseover',function(d){
         var className = "stem" + yr
         d3.select(this).selectAll('circle')
-          .attr("fill", "blue")
+          //.attr("fill", "blue")
         	.attr('r',6);
          
         d3.select(this).selectAll('line')
         	.attr('stroke-width', 3)
-        	.attr('stroke', 'blue')
+        	//.attr('stroke', 'blue')
         	.attr('stroke-dasharray','none');
         	//.attr('r',d=>{return(Math.sqrt(d.Population/(1000000)));})
 			
@@ -444,13 +568,19 @@ var output = obj;
 				floatingTSpan.exit().remove();*/
        })       
        .on('mouseout',function(d){
-        var className = "stem" + yr
+        var className = "stem" + yr;
+		var country = d3.select(this).selectAll('circle').data();
+		//console.log(country);
+		//var color = colorScale(d3.select(this).data().Country);
+		 
         d3.select(this).selectAll('circle')
-          .attr("fill", 'rgba(0,0,0,.2)')
-        	.attr('r',4);
+			//.attr('fill', function(d){return(colorScale(d.Country));})
+          //.attr("fill", 'rgba(0,0,0,.2)')
+        	.attr('r',3);
        	d3.select(this).selectAll('line')
         	.attr('stroke-width', 1)
-        	.attr('stroke', 'black')
+        	//.attr('stroke', 'black')
+			//.attr('stroke',color)
         	.attr('stroke-dasharray', '5,4');
        	
 
@@ -466,10 +596,20 @@ var output = obj;
      };
       
 
-     xAxisG.call(xAxis);
-	 yAxisG.call(yAxis);
-	 xAxisGLine.call(xAxisLine);
+     xAxisG.call(xAxis)
+	 .selectAll('.tick text')
+	 .attr('transform','rotate(-45)');
+	 
+	 yAxisG.call(yAxis)
+		.selectAll('tick text')
+		.attr('stroke', 'black');
+	 xAxisGLine.call(xAxisLine)
+	 .selectAll('.tick text')
+	 .attr('transform','rotate(-45)');
+	 
 	 yAxisGLine.call(yAxisLine);
+	 
+	 svg.exit().remove();
     
      /*var stemObjTop = generalUpdate(outerGroup,{obj:"rect", cl:".stem" + Math.ceil(year)}, fYearData);
      stemObjTop = generalEnter(stemObjTop, {obj:"rect", cl:".stem" + Math.ceil(year)});
@@ -514,19 +654,15 @@ var output = obj;
      d.Final_Rank = +d.Final_Rank;
      return(d);};
     
-  d3.csv("data/Data3.csv", rows , function(data){return(render(data, 2013, 10))})  
-    
-    
-    /*var update = function(Year){
-      console.log(Year);
-      d3.csv("Data3.csv", rows , function(data){return(render(data, Year, 5))});
-    };
-    //d3.csv("Data3.csv", rows , function(data){return(render(data, 2013, 2))})
-    update(1990)
-    
-    d3.select("#Year").on("input", function() 
-    {
-  			update(+this.value);
-		});*/
+  //d3.csv("data/Data3.csv", rows , function(data){return(render(data, 2013, 10))})  
+  
+  var redraw = function()
+  {
+		d3.csv("data/Data3.csv", rows,function(data){return(render(data, 2013, 10));});
+  };
+  
+   redraw();
+   window.addEventListener("resize", redraw); 
+ 
   </script>
 </body>
