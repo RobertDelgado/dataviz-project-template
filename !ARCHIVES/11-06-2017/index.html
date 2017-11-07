@@ -403,7 +403,7 @@ popObj.exit().remove();
 									 .range([innerHeight/2.5,0]);
 									 
 	var xScaleSide = d3.scaleLinear().domain([1990, 2013])
-									.range([0,innerWidth/2.5]);
+									.range([0,innerWidth/4.5]);
 
 	
 	var line = d3.line()
@@ -488,39 +488,6 @@ popObj.exit().remove();
       
     
       lineSeries.exit().remove();
-      
-      
-      
-      
-      
- //var sideYearData = data     
-console.log(fYearData)
-var sideYearGroups ={};
-var sideYearMarks = {};
-for(yr = 1990; yr <= year;yr++)
-{
-  var thisYearData = data.filter(function(d){return(d.Year == yr)});
-  sideYearGroups[yr] = sideVizG.selectAll(".sideYearMark" + yr).data([null]);
-  sideYearGroups[yr] = sideYearGroups[yr].enter().append('g').attr('class', 'sideYearMark' + yr).merge(sideYearGroups[yr]);
-  
-  sideYearMarks[yr] = sideYearGroups[yr].selectAll('circle').data(thisYearData);
-  sideYearMarks[yr] = sideYearMarks[yr].enter().append('circle')
-  												.merge(sideYearMarks[yr])
-  												.attr('r', 3)
-  												.attr('cx', xScaleSide(yr))
-  												.attr('cy', function(d){return yScaleSide(d.GHG);})
-  												.attr('fill', function(d){return(colorScale(d.Country));})
-  
-  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
-  
-  
-  
-  
-  sideYearMarks[yr].exit().remove();
-  
-  
-  
-}
   
   //////////Have this respond to resize///////////////////
 	/*for(var datum = 0; datum < countryData.length; datum++)
