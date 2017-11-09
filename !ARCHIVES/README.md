@@ -36,7 +36,7 @@ c.	Would also like a feel for each country’s population.
 d. (If I have time), Which countries are the most wasteful?  In other words, which countries had the greatest greenhouse gas emission per person?  Did this change over time?
 
 
-##Visualization:
+## Visualization:
 Here is a look at the final visualization:
 
 ![Prototype](/images/Prototype.PNG)
@@ -52,20 +52,22 @@ graphs (that will be explained).
 
 The other two graphs, to the right show the annual greenhouse gas emission level and greenhouse gas emissions per capita for each of the countries.  The interactions are similar to those with the main graph.
 
-##Previous attempts:
+## Previous attempts:
 The final idiom is a result of alot of trial and error:
 
 I first wanted to allow the user to pan across a set of tiled scatter-plots.  However when I saw the data, found that this would be very wasteful and clumsy.  Here is a sample of data for 2012:
 
 	[Link to first prototype](https://bl.ocks.org/RobertDelgado/a5eb4532c2dd3a564cca012d985b5fef/14055ce319ae5e0a88628a813455a08d35b810a1)
-	t
+	
 After a bit of thought, I settled on the form for the main graph.  However, I still wanted to tile the graphs to allow the user simultaneous access to each of the graphs.  This might have worked with say 6 years but with 
-24 years, (1990 to 2013), panning and zooming was overwhelming.  As a user, I got lost very easily and spent more energy keeping track of where I was than digesting the vis contents.  [Link](https://bl.ocks.org/RobertDelgado/f823d3683bb591bac643bfc7cf35d6a4/66fddccde67fac1c391a2a79634576d3577507a9) 
+24 years, (1990 to 2013), panning and zooming was overwhelming.  As a user, I got lost very easily and spent more energy keeping track of where I was than digesting the vis contents.  
+
+[Link](https://bl.ocks.org/RobertDelgado/f823d3683bb591bac643bfc7cf35d6a4/66fddccde67fac1c391a2a79634576d3577507a9) 
 This was clearly unacceptable so... back to the drawing board.
 
 I finally settled on the final form and decided to use interaction to convey the detailed informatiion.  Yes. "Details on Demand".
 
-##Conclusion:
+## Conclusion:
 I hope that you enjoy this visualiztion as much as I enjoyed creating it.  Thank you. :)
 
 
@@ -75,4 +77,3 @@ I hope that you enjoy this visualiztion as much as I enjoyed creating it.  Thank
 
 
 
-[Previous Prototype](https://bl.ocks.org/RobertDelgado/f823d3683bb591bac643bfc7cf35d6a4/66fddccde67fac1c391a2a79634576d3577507a9)
