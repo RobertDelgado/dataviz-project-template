@@ -39,8 +39,6 @@ d. (If I have time), Which countries are the most wasteful?  In other words, whi
 ## Visualization:
 Here is a look at the final visualization:
 
-![Prototype](/images/Prototype.PNG)
-
 [Link to final visualization](https://robertdelgado.github.io/dataviz-project-template_rdelgado/)
 
 The main (rightmost) graph shows both cumulative greenhouse gas emission by country for each year from 1990 to 2013.  When the user hovers over the top circle, the user will see the country's population and cumulative greenhouse

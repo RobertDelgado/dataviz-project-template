@@ -534,184 +534,27 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
   
 }
   
+  //////////Have this respond to resize///////////////////
+	/*for(var datum = 0; datum < countryData.length; datum++)
+	{
+		var thisCountryData = data.filter(function(d){return(d.Country == countryData[datum].Country);});
+		thisCountryData = thisCountryData.sort(function(a,b){return(a.Year - b.Year);});
+    var thisCountry = thisCountryData[0].Country;
+    
 
-
-
-//////////////////////////l2nd viz
-
-	var yScaleSide2 = d3.scaleLinear().domain([0,490])
-									 .range([innerHeight/2.5,0]);
-									 
-	var xScaleSide2 = d3.scaleLinear().domain([1990, 2013])
-									.range([0,innerWidth/2.5]);
-
-
-var line2 = d3.line()
-		.curve(d3.curveLinear)
-		.x(function(d){ 
-		return xScaleSide2(d.Year);})
-		.y(function(d){ return yScaleSide2(d.GHG_per_capita); });
-	 
-
-
-	 
-
-	  var sideVizG2 = mainGraphGroup.selectAll('.sideVizG2').data([null]);
-	  sideVizG2 = sideVizG2.enter().append('g')
-					.attr('class', 'sideVizG2')
-      		.merge(sideVizG2)
-					.attr('transform', `translate(${innerWidth/1.75}, ${innerHeight/1.5})`);
-	  sideVizG2.exit().remove();
-
-	  
-	  var xAxisGLine2 = sideVizG.selectAll('.xAxisLine2').data([null]);
-	  xAxisGLine2 = xAxisGLine2.enter()
-						.append('g')
-						.attr('class', 'xAxisLine2')
-						.merge(xAxisGLine2)
-						.attr('transform', `translate(${0},${innerHeight/2.5})` );
-      
-    var xAxisGLineText2 = xAxisGLine2.selectAll('text').data([null]);
-      xAxisGLineText2 = xAxisGLineText2.enter()
-						.append('text')
-						.text('Year')
-             .attr('stroke','black')
-						.attr('transform',`translate(${innerWidth/4.5},30)`);					
-	  
-	  xAxisGLine2.exit().remove();
-	  var xAxisLine2 = d3.axisBottom(xScaleSide2);								
-      
-	  var yAxisGLine2 = sideVizG2.selectAll('.yAxisGLine2').data([null]);
-	  yAxisGLine2 = yAxisGLine2.enter().append('g')
-						.attr('class', 'yAxisGLine2')
-						.merge(yAxisGLine2);
-						
-						
-	  
-	  var yAxisGLineText2 = yAxisGLine2.selectAll('text').data([null]);
-      	yAxisGLineText2 = yAxisGLineText2.enter()
-    											.append('text')
-	  											.text('GHG emissions (tonnes)')
-					.attr('stroke','black')
-					.attr('transform', `rotate(-90)`)
-					.attr('x',-innerHeight/20)
-					.attr('y', -45);	  
-	  
-	  
-
+    
+    
+		countryLine[thisCountry] = sideVizG.append('path').datum(thisCountryData)
+					.attr('class','line')
+					.style('stroke', function(d){return colorScale(thisCountry);})
+					.style('fill','none')
+					.attr("d",line);//.attr('stroke','black');
 					
-	yAxisGLine2.exit().remove();
-	
-	var yAxisLine2 = d3.axisLeft(yScaleSide2);
-
-	
-
-   //var countryLine2 = data.sort(function(a,b){return a.Year - b.Year}) ; 
-   
-    countryLine2 = d3.nest()
-   											.key(function(d){return(d.Country);})
-   											.entries(countryLine);
-   											
-
-	
-	var lineSeries2 = sideVizG2.selectAll('.line').data(countryLine);
-      lineSeries2 = lineSeries2
-      							.attr("d",function(d){return line2(d.values);});
-   var lineSeriesEnter2 = lineSeries2.enter().append('path')
-  									.attr('class', 'line')
-   									.attr('id', d => d.key)
-      							.attr("d",function(d){return line2(d.values)})
-      							//.merge(lineSeries)
-  									.style('stroke', function(d){console.log(d.key); return colorScale(d.key);})
-										.style('fill','none');
-      							
+		
 					
-      
-    
-      lineSeries2.exit().remove();
-      
-      
-      
-      
-      
- //var sideYearData = data     
-console.log(fYearData)
-var sideYearGroups2 ={};
-var sideYearMarks2 = {};
-for(yr = 1990; yr <= year;yr++)
-{
-  var thisYearData = data.filter(function(d){return(d.Year == yr)});
-  sideYearGroups2[yr] = sideVizG2.selectAll(".sideYearMark2" + yr).data([null]);
-  sideYearGroups2[yr] = sideYearGroups2[yr].enter().append('g').attr('class', 'sideYearMark2' + yr).attr('id',yr).merge(sideYearGroups2[yr]);
-  
-  sideYearMarks2[yr] = sideYearGroups2[yr].selectAll('circle').data(thisYearData);
-  sideYearMarks2[yr] = sideYearMarks2[yr].enter().append('circle')
-  												.merge(sideYearMarks2[yr])
-  												.attr('r', 5)
-  												.attr('cx', xScaleSide2(yr))
-  												.attr('cy', function(d){return yScaleSide2(d.GHG_per_capita);})
-  												.attr('fill', function(d){return(colorScale(d.Country));})
-  
-  //sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
-  
-sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
-     d3.select(this).selectAll('circle').attr('r', 7);
-     var yearVar = d3.select(this).attr('id');
-     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 10);
-    
-     //console.log(d3.select(this))
-     //console.log(stemObjBottom, yr, year)
-    
-  })
-  											.on('mouseout',function(d){d3.select(this).selectAll('circle').attr('r',5);
- var yearVar = d3.select(this).attr('id');
-     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);                                                 
-                                                  })  
-  
-  
-  sideYearMarks2[yr].exit().remove();
-  }
-  
-  
-  /////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+		
+	};*/
+	//////////////////////////////////////////////////////
 
      var bandwidthFactor = 1.08
      var stemObjBottom = {};
@@ -825,14 +668,6 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
 	 
 	 yAxisGLine.call(yAxisLine);
 	 
-	 
-	 
-	  xAxisGLine2.call(xAxisLine2)
-	 .selectAll('.tick text')
-	 .attr('transform','rotate(-45)');
-	 
-	 yAxisGLine2.call(yAxisLine2);
-	 
 	 svg.exit().remove();
       
     
@@ -865,7 +700,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
   
   var redraw = function()
   {
-		d3.csv("data/Data4.csv", rows,function(data){return(render(data, 2013, 10));});
+		d3.csv("data/Data3.csv", rows,function(data){return(render(data, 2013, 10));});
   };
   
    redraw();
