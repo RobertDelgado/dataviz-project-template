@@ -1,10 +1,4 @@
 
-
-
-```
-cd dataviz-project-template
-npm install
-```
 ## Introduction:
 
 Few would argue against the existance of global warming.  From land/sea surface temperature increases to glacial melting and loss of northern snow cover, the evidence has been compelling, (https://climate.nasa.gov/evidence/).
@@ -45,17 +39,34 @@ d. (If I have time), Which countries are the most wasteful?  In other words, whi
 ##Visualization:
 Here is a look at the final visualization:
 
-![Prototype](images/Prototype.PNG)
+![Prototype](/images/Prototype.PNG)
 
 Link to final visualization](https://robertdelgado.github.io/dataviz-project-template_rdelgado/)
 
 The main (rightmost) graph shows both cumulative greenhouse gas emission by country for each year from 1990 to 2013.  When the user hovers over the top circle, the user will see the country's population and cumulative greenhouse
 gas emissions as of 2013.
 
-The smaller circles represent each of the previous years.  Their vertical displacement represents each country's cumulative greeenhouse gas emissions for that year.  When the user hovers over one of the smaller circles, the circle highlights
-along with the interval between it and the circle representing the previous year (representing the annual greenhouse gas emissions for that country).  
+The smaller circles represent each of the previous years.  Their vertical displacement represents each country's cumulative greeenhouse gas emissions for that year.  When the user hovers over one of the smaller circles, the 
+circle representing that year highlights along with the interval between it and the circle representing the previous year *for each country*.  Furthermore the appropriate intervals and marks highlight on the 2 secondary 
+graphs (that will be explained).
 
+The other two graphs, to the right show the annual greenhouse gas emission level and greenhouse gas emissions per capita for each of the countries.  The interactions are similar to those with the main graph.
 
+##Previous attempts:
+The final idiom is a result of alot of trial and error:
+
+I first wanted to allow the user to pan across a set of tiled scatter-plots.  However when I saw the data, found that this would be very wasteful and clumsy.  Here is a sample of data for 2012:
+
+	[Link to first prototype](https://bl.ocks.org/RobertDelgado/a5eb4532c2dd3a564cca012d985b5fef/14055ce319ae5e0a88628a813455a08d35b810a1)
+	t
+After a bit of thought, I settled on the form for the main graph.  However, I still wanted to tile the graphs to allow the user simultaneous access to each of the graphs.  This might have worked with say 6 years but with 
+24 years, (1990 to 2013), panning and zooming was overwhelming.  As a user, I got lost very easily and spent more energy keeping track of where I was than digesting the vis contents.  [Link](https://bl.ocks.org/RobertDelgado/f823d3683bb591bac643bfc7cf35d6a4/66fddccde67fac1c391a2a79634576d3577507a9) 
+This was clearly unacceptable so... back to the drawing board.
+
+I finally settled on the final form and decided to use interaction to convey the detailed informatiion.  Yes. "Details on Demand".
+
+##Conclusion:
+I hope that you enjoy this visualiztion as much as I enjoyed creating it.  Thank you. :)
 
 
 
