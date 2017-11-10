@@ -365,6 +365,21 @@ popObj.exit().remove();
 					.attr('transform', `translate(${innerWidth/1.75}, ${innerHeight/10.0})`);
 	  sideVizG.exit().remove();
 
+
+
+
+	  var sideVizTitle = sideVizG.selectAll('.textTitle1').data([null]);
+	  sideVizTitle = sideVizTitle.enter().append('text').attr('class', 'textTitle1')
+							.merge(sideVizTitle)
+							.text('Annual GHG emissions')
+							.attr('transform', `translate(${innerWidth/8},${innerHeight/20})`)
+							.attr('font-size', innerHeight/15);
+
+
+
+
+
+
 	  
 	  var xAxisGLine = sideVizG.selectAll('.xAxisLine').data([null]);
 	  xAxisGLine = xAxisGLine.enter()
@@ -469,7 +484,7 @@ for(yr = 1990; yr <= year;yr++)
 	  .attr('fill', d => colorScale(d.Country))
 	  .attr('stroke-width', 2);*/
   
-  //sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
+  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
   
 sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
      d3.select(this).selectAll('circle').attr('r', 7);
@@ -498,7 +513,7 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
 
 //////////////////////////l2nd viz
 
-	var yScaleSide2 = d3.scaleLinear().domain([0,490])
+	var yScaleSide2 = d3.scaleLinear().domain([0,30])
 									 .range([innerHeight/2.5,0]);
 									 
 	var xScaleSide2 = d3.scaleLinear().domain([1990, 2013])
@@ -527,7 +542,7 @@ var line2 = d3.line()
 	  sideVizTitle2 = sideVizTitle2.enter().append('text').attr('class', 'textTitle2')
 							.merge(sideVizTitle2)
 							.text('GHG emissions per capita')
-							.attr('transform', `translate(${innerWidth/8},${innerHeight/10})`)
+							.attr('transform', `translate(${innerWidth/8},${innerHeight/20})`)
 							.attr('font-size', innerHeight/15);
 							
 	  var xAxisGLine2 = sideVizG.selectAll('.xAxisLine2').data([null]);
