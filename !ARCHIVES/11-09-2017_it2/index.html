@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script type = "text/javascript" src="d3.min.js"></script>
   <style>
     body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
         body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
@@ -100,7 +100,6 @@
 	  
 	  
 	  
-	  
   </style>
 	
 	
@@ -116,7 +115,6 @@
   <script>
   
   //<script src='d3.v4.min.js'>
-  //<script type = "text/javascript" src="d3.min.js">
   
 //import * from d3 as "d3";
 
@@ -189,10 +187,10 @@ var svg = d3.select('div').selectAll('svg').data([null]);
      graphTitle = graphTitle.enter().append('text')
      .attr('class', 'graphTitle')
      	.merge(graphTitle)
-     	.text("Cumulative GHG emissions by Country")
-      .attr("y", height/2.5)
-      .attr("x", width/6)
-      .attr("font-size", height/30)
+     	.text(Math.ceil(year))
+      .attr("y", height/2)
+      .attr("x", width/5)
+      .attr("font-size", height/15)
       .attr("font-family", "monospace")
     	.attr('stroke', 'black');
 
@@ -304,21 +302,18 @@ var svg = d3.select('div').selectAll('svg').data([null]);
       									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');})
       
          		 
-
+	  //var popObjUpdate = popObj.append('circle')
+    //													.attr('r',30);
 	  
 	 var popObjEnter = popObj.enter()
 				.append('g')
     		.attr('class', 'popObj')
     		.attr('transform', function(d){return( 
       									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');})
-			
     	var popCircle = popObjEnter	
-				.append('circle')
-				.attr("r",d => Math.sqrt(d.Population/(1000000)))
-                .attr("fill", "rgba(10, 10, 10,.1)")
-				.attr('stroke', 'black')
-				.attr("stroke-dasharray","5,4")
-				.on('mouseover',function(d){console.log("Hello");})
+      .append('circle')
+		    .attr("r",d => Math.sqrt(d.Population/(1000000)))
+                        .attr("fill", "rgba(10, 10, 10,.1)");
       
       
       
@@ -329,7 +324,73 @@ var svg = d3.select('div').selectAll('svg').data([null]);
       
     		
     
- 
+    /*popObjEnter	= popObjEnter.merge(popObj)
+    		.attr('transform', function(d){return( 
+      									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');});;*/
+      
+     //popObj.append('circle')
+     //						.attr('r', 30);
+     						 ;
+    		
+    	/*	//.attr('transform', function(d){return( 
+      	//								'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');});
+      popObj.select('circle')
+    		.attr("r",d => Math.sqrt(d.Population/(1000000)))
+                        .attr("fill", "rgba(10, 10, 10,.1)")
+      									.attr('cx',0)
+      									.attr('cy',0);
+                        	  
+      popObjEnter.append('circle');   
+      
+        popObj = popObj.merge(popObj)
+        .attr('stroke-dasharray', '5,5')
+				.attr('transform', function(d){return( 
+      									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');})
+				.attr('stroke', 'black')
+        .select('circle')
+        .attr('transform', 'translate(0,0)')
+        //.selectAll('circle')
+        //.attr("r",d => Math.sqrt(d.Population/(1000000)))
+        //                .attr("fill", "rgba(10, 10, 10,.1)");
+        ;
+      
+    popObj = popObj.on('mouseover', function(d){
+        d3.select(this).select('circle').attr('fill', 'rgba(0,0,255,.2)');
+        d3.select(this).select('text')
+          .text(d => "Pop: " + Math.round(d.Population/1000000) + "M , Cum GHG: " + Math.round(d.GHG_Cum/1000) + 'K tonnes')
+        	.attr('y',-40)
+        	.attr('x', 50)
+          .style('display',null);
+          
+        //var thisYear = d3.select(this).attr('cx');
+        //console.log(d3.select(this).data()[0]);
+          
+
+        
+        
+      })
+        .on('mouseout', function(d){
+          //d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
+		  
+		  d3.select(this).select('circle').attr('fill', 'rgba(10, 10, 10, .1)');
+          d3.select(this).select('text').style('display','none');
+        })
+    
+    
+   
+      */
+      
+
+      
+      
+      
+      
+      
+    	    
+        /*popObj
+          .append('circle')
+					.attr("r",d => Math.sqrt(d.Population/(1000000)))
+          .attr("fill", "rgba(10, 10, 10,.1)");*/
      
 popObj.exit().selectAll('circle').remove();
 popObj.exit().remove();
@@ -378,8 +439,7 @@ popObj.exit().remove();
 						.append('text')
 						.text('Year')
              .attr('stroke','black')
-			 .merge(xAxisGLineText)
-			.attr('transform',`translate(${innerWidth/5.5},${innerHeight/15})`);					
+						.attr('transform',`translate(${innerWidth/4.5},30)`);					
 	  
 	  xAxisGLine.exit().remove();
 	  var xAxisLine = d3.axisBottom(xScaleSide);								
@@ -394,11 +454,11 @@ popObj.exit().remove();
 	  var yAxisGLineText = yAxisGLine.selectAll('text').data([null]);
       	yAxisGLineText = yAxisGLineText.enter()
     											.append('text')
-	  											.text('Annual GHG emissions (tonnes)')
+	  											.text('GHG emissions (tonnes)')
 					.attr('stroke','black')
 					.attr('transform', `rotate(-90)`)
 					.attr('x',-innerHeight/20)
-					.attr('y', -innerWidth/45);	  
+					.attr('y', -45);	  
 	  
 	  
 
@@ -440,7 +500,6 @@ popObj.exit().remove();
 console.log(fYearData)
 var sideYearGroups ={};
 var sideYearMarks = {};
-var sideYearLines = {};
 for(yr = 1990; yr <= year;yr++)
 {
   var thisYearData = data.filter(function(d){return(d.Year == yr)});
@@ -453,21 +512,7 @@ for(yr = 1990; yr <= year;yr++)
   												.attr('r', 5)
   												.attr('cx', xScaleSide(yr))
   												.attr('cy', function(d){return yScaleSide(d.GHG);})
-  												.attr('fill', function(d){return(colorScale(d.Country));});
-												
-												
-												
-										
-										
-   /*sideYearLines[yr] = sideYearGroups[yr].selectAll('.sideLineMarks').data(thisYearData);
-	  sideYearLines[yr] = sideYearLines[yr].enter().append('line')
-	  .attr('class','sideLineMarks')
-	  .attr('x1',xScaleSide(yr))
-	  .attr('x2', xScaleSide(yr-1))
-	  .attr('y1', d => yScaleSide(d.GHG))
-	  .attr('y2',d => yScaleSide(d.GHG))
-	  .attr('fill', d => colorScale(d.Country))
-	  .attr('stroke-width', 2);*/
+  												.attr('fill', function(d){return(colorScale(d.Country));})
   
   //sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
   
@@ -475,15 +520,14 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
      d3.select(this).selectAll('circle').attr('r', 7);
      var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 10);
-	 d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 7);
     
-     
+     //console.log(d3.select(this))
+     //console.log(stemObjBottom, yr, year)
     
   })
   											.on('mouseout',function(d){d3.select(this).selectAll('circle').attr('r',5);
  var yearVar = d3.select(this).attr('id');
-     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);  
-	d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
+     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);                                                 
                                                   })  
   
   
@@ -504,7 +548,6 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
 	var xScaleSide2 = d3.scaleLinear().domain([1990, 2013])
 									.range([0,innerWidth/2.5]);
 
-									
 
 var line2 = d3.line()
 		.curve(d3.curveLinear)
@@ -523,13 +566,7 @@ var line2 = d3.line()
 					.attr('transform', `translate(${innerWidth/1.75}, ${innerHeight/1.5})`);
 	  sideVizG2.exit().remove();
 
-	  var sideVizTitle2 = sideVizG2.selectAll('.textTitle2').data([null]);
-	  sideVizTitle2 = sideVizTitle2.enter().append('text').attr('class', 'textTitle2')
-							.merge(sideVizTitle2)
-							.text('GHG emissions per capita')
-							.attr('transform', `translate(${innerWidth/8},${innerHeight/10})`)
-							.attr('font-size', innerHeight/15);
-							
+	  
 	  var xAxisGLine2 = sideVizG.selectAll('.xAxisLine2').data([null]);
 	  xAxisGLine2 = xAxisGLine2.enter()
 						.append('g')
@@ -541,9 +578,8 @@ var line2 = d3.line()
       xAxisGLineText2 = xAxisGLineText2.enter()
 						.append('text')
 						.text('Year')
-						.attr('stroke','black')
-						.merge(xAxisGLineText2)
-						.attr('transform',`translate(${innerWidth/4.5},${innerHeight/1.72})`);					
+             .attr('stroke','black')
+						.attr('transform',`translate(${innerWidth/4.5},30)`);					
 	  
 	  xAxisGLine2.exit().remove();
 	  var xAxisLine2 = d3.axisBottom(xScaleSide2);								
@@ -624,14 +660,15 @@ for(yr = 1990; yr <= year;yr++)
 sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
      d3.select(this).selectAll('circle').attr('r', 7);
      var yearVar = d3.select(this).attr('id');
-     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 7);
-	 d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 7);
+     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 10);
+    
+     //console.log(d3.select(this))
+     //console.log(stemObjBottom, yr, year)
     
   })
   											.on('mouseout',function(d){d3.select(this).selectAll('circle').attr('r',5);
  var yearVar = d3.select(this).attr('id');
-     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);  
-	 d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 5);
+     d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);                                                 
                                                   })  
   
   
@@ -643,6 +680,41 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
      var bandwidthFactor = 1.08
      var stemObjBottom = {};
@@ -675,8 +747,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
        									//.attr('fill','rgba(0,0,0,.2)')
 												.attr('fill', function(d){return colorScale(d.Country);})
        									.attr('cx',d => xScale(xValue(d)) + xScale.bandwidth()/2)
-       									.attr('cy', d =>{return yScale(d.GHG_Cum);})
-										.attr('id', yr);
+       									.attr('cy', d =>{return yScale(d.GHG_Cum);});
        
       
 
@@ -700,15 +771,8 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
        stemObjBottom[yr].on('mouseover',function(d){
         var className = "stem" + yr
         d3.select(this).selectAll('circle')
-		.attr('r',6);
-		
-		 var yearVar = d3.select(this).select('circle').attr('id');
-		 //console.log(yearVar)
-		
-		d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 7);
-		d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 7);
           //.attr("fill", "blue")
-        	
+        	.attr('r',6);
          
         d3.select(this).selectAll('line')
         	.attr('stroke-width', 3)
@@ -737,16 +801,17 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
         	//.attr('stroke', 'black')
 			//.attr('stroke',color)
         	.attr('stroke-dasharray', '5,4');
-			
-		var yearVar = d3.select(this).select('circle').attr('id');
-		d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
-		d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 5);
        	
 
          
        })
       stemObjBottom[yr].exit().remove();
-	
+	  
+	  
+                            
+                           
+       
+
      };
       
 
