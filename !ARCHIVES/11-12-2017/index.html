@@ -492,18 +492,17 @@ for(yr = 1990; yr <= year;yr++)
 												
 										
 	//Comment this out									
-   sideYearLines[yr] = sideYearGroups[yr].selectAll('.sideLineMarksXX' + yr).data(thisYearData);
+   /*sideYearLines[yr] = sideYearGroups[yr].selectAll('.sideLineMarks').data(thisYearData);
 	  sideYearLines[yr] = sideYearLines[yr].enter().append('line')
-	  .attr('class','sideLineMarksXX' + yr)
-	  .merge(sideYearLines[yr])
+	  .attr('class','sideLineMarks')
 	  .attr('x1',xScaleSide(yr))
-	  .attr('x2', d => {if(yr == 1990){return(xScaleSide(yr));} return(xScaleSide(yr-1))})
+	  .attr('x2', xScaleSide(yr-1))
 	  .attr('y1', d => yScaleSide(d.GHG))
-	  .attr('y2',d => {if(yr == 1990){return(yScaleSide(d.GHG));}return(yScaleSide(d.GHG_previous));})
-	  .attr('stroke', d => colorScale(d.Country))
+	  .attr('y2',d => yScaleSide(d.GHG))
+	  .attr('fill', d => colorScale(d.Country))
 	  .attr('stroke-width', 2);
   
-  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
+  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})*/
   //Comment this out ends here
   
 sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
@@ -515,7 +514,6 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
 	 
 	 /////////////////dkfaljksdla
 	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','none').style('stroke-width', 7);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);
     
      
     
@@ -526,8 +524,6 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
 	d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
 	///////////////dsafdaldjlda
 	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','5,2').style('stroke-width', 1);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
-	 
                                                   })  
   
   
@@ -671,7 +667,6 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 7);
 	 d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 7);
 	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','none').style('stroke-width', 7);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);
 	 //console.log(links);
     
   })
@@ -683,7 +678,6 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
 		.selectAll('.link')
 		.style('stroke-width', 1)
 		.style('stroke-dasharray', '5,2');
-	d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
                                                   })  
   
   
@@ -769,7 +763,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
         	.attr('stroke-dasharray','none');
         	//.attr('r',d=>{return(Math.sqrt(d.Population/(1000000)));})
 			
-		d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);	
+			
 			
         var tempData = d3.select(this).selectAll('circle').data();
         
@@ -789,7 +783,6 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
 		var yearVar = d3.select(this).select('circle').attr('id');
 		d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
 		d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 5);
-		d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
        	
 
          
@@ -836,7 +829,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
   
   var redraw = function()
   {
-		d3.csv("data/Data6.csv", rows,function(data){return(render(data, 2013, 10));});
+		d3.csv("data/Data5.csv", rows,function(data){return(render(data, 2013, 10));});
   };
   
    redraw();

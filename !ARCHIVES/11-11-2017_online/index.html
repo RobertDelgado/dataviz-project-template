@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <script type = "text/javascript" src="d3.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
   <style>
     body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
         body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
@@ -492,18 +492,17 @@ for(yr = 1990; yr <= year;yr++)
 												
 										
 	//Comment this out									
-   sideYearLines[yr] = sideYearGroups[yr].selectAll('.sideLineMarksXX' + yr).data(thisYearData);
+   /*sideYearLines[yr] = sideYearGroups[yr].selectAll('.sideLineMarks').data(thisYearData);
 	  sideYearLines[yr] = sideYearLines[yr].enter().append('line')
-	  .attr('class','sideLineMarksXX' + yr)
-	  .merge(sideYearLines[yr])
+	  .attr('class','sideLineMarks')
 	  .attr('x1',xScaleSide(yr))
-	  .attr('x2', d => {if(yr == 1990){return(xScaleSide(yr));} return(xScaleSide(yr-1))})
+	  .attr('x2', xScaleSide(yr-1))
 	  .attr('y1', d => yScaleSide(d.GHG))
-	  .attr('y2',d => {if(yr == 1990){return(yScaleSide(d.GHG));}return(yScaleSide(d.GHG_previous));})
-	  .attr('stroke', d => colorScale(d.Country))
+	  .attr('y2',d => yScaleSide(d.GHG))
+	  .attr('fill', d => colorScale(d.Country))
 	  .attr('stroke-width', 2);
   
-  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
+  sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})*/
   //Comment this out ends here
   
 sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
@@ -511,11 +510,6 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
      var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 10);
 	 d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 7);
-	 
-	 
-	 /////////////////dkfaljksdla
-	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','none').style('stroke-width', 7);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);
     
      
     
@@ -524,10 +518,6 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
  var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);  
 	d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
-	///////////////dsafdaldjlda
-	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','5,2').style('stroke-width', 1);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
-	 
                                                   })  
   
   
@@ -670,20 +660,12 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
      var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 7);
 	 d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 7);
-	 d3.selectAll('.stem' + yearVar).selectAll('.link').style('stroke-dasharray','none').style('stroke-width', 7);
-	 d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);
-	 //console.log(links);
     
   })
   											.on('mouseout',function(d){d3.select(this).selectAll('circle').attr('r',5);
  var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 3);  
 	 d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 5);
-	 d3.selectAll('.stem' + yearVar)
-		.selectAll('.link')
-		.style('stroke-width', 1)
-		.style('stroke-dasharray', '5,2');
-	d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
                                                   })  
   
   
@@ -769,7 +751,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
         	.attr('stroke-dasharray','none');
         	//.attr('r',d=>{return(Math.sqrt(d.Population/(1000000)));})
 			
-		d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 7);	
+			
 			
         var tempData = d3.select(this).selectAll('circle').data();
         
@@ -778,18 +760,22 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
        .on('mouseout',function(d){
         var className = "stem" + yr;
 		var country = d3.select(this).selectAll('circle').data();
-
+		//console.log(country);
+		//var color = colorScale(d3.select(this).data().Country);
 		 
         d3.select(this).selectAll('circle')
+			//.attr('fill', function(d){return(colorScale(d.Country));})
+          //.attr("fill", 'rgba(0,0,0,.2)')
         	.attr('r',3);
        	d3.select(this).selectAll('line')
         	.attr('stroke-width', 1)
+        	//.attr('stroke', 'black')
+			//.attr('stroke',color)
         	.attr('stroke-dasharray', '5,4');
 			
 		var yearVar = d3.select(this).select('circle').attr('id');
 		d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 5);
 		d3.selectAll('.sideYearMark' + yearVar).selectAll('circle').attr('r', 5);
-		d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
        	
 
          
@@ -836,7 +822,7 @@ sideYearGroups2[yr] = sideYearGroups2[yr].on('mouseover', function(d){
   
   var redraw = function()
   {
-		d3.csv("data/Data6.csv", rows,function(data){return(render(data, 2013, 10));});
+		d3.csv("data/Data5.csv", rows,function(data){return(render(data, 2013, 10));});
   };
   
    redraw();
