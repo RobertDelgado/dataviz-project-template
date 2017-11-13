@@ -357,8 +357,8 @@ popObj.exit().remove();
 	  sideVizTitle = sideVizTitle.enter().append('text').attr('class', 'textTitle1')
 							.merge(sideVizTitle)
 							.text('Annual GHG emissions')
-							.attr('transform', `translate(${innerWidth/8},${innerHeight/20})`)
-							.attr('font-size', innerHeight/15);
+							.attr('transform', `translate(${innerWidth/15},${innerHeight/20})`)
+							.attr('font-size', innerHeight/20);
 
 
 
@@ -474,6 +474,8 @@ for(yr = 1990; yr <= year;yr++)
   sideYearMarks[yr] = sideYearMarks[yr].on('mouseover', function(d){console.log("Hello");})
   //Comment this out ends here
   
+  
+  
 sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
      d3.select(this).selectAll('circle').attr('r', 7);
      var yearVar = d3.select(this).attr('id');
@@ -539,8 +541,8 @@ var line2 = d3.line()
 	  sideVizTitle2 = sideVizTitle2.enter().append('text').attr('class', 'textTitle2')
 							.merge(sideVizTitle2)
 							.text('GHG emissions per capita')
-							.attr('transform', `translate(${innerWidth/8},${innerHeight/20})`)
-							.attr('font-size', innerHeight/15);
+							.attr('transform', `translate(${innerWidth/15},${innerHeight/20})`)
+							.attr('font-size', innerHeight/20);
 							
 	  var xAxisGLine2 = sideVizG2.selectAll('.xAxisLine2').data([null]);
 	  xAxisGLine2 = xAxisGLine2.enter()
@@ -555,7 +557,7 @@ var line2 = d3.line()
 						.text('Year')
 						.attr('stroke','black')
 						.merge(xAxisGLineText2)
-						.attr('transform',`translate(${innerWidth/4.5},${innerHeight/1.72})`);					
+						.attr('transform',`translate(${innerWidth/4.5},${innerHeight/20})`);					
 	  
 	  xAxisGLine2.exit().remove();
 	  var xAxisLine2 = d3.axisBottom(xScaleSide2);								
@@ -573,7 +575,7 @@ var line2 = d3.line()
 	  											.text('GHG emissions (tonnes)')
 					.attr('stroke','black')
 					.attr('transform', `rotate(-90)`)
-					.attr('x',-innerHeight/20)
+					.attr('x',-innerHeight/9)
 					.attr('y', -45);	  
 	  
 	  
