@@ -459,7 +459,7 @@ for(yr = 1990; yr <= year;yr++)
   var thisYearData = data.filter(function(d){return(d.Year == yr)});
   sideYearGroups[yr] = sideVizG.selectAll(".sideYearMark" + yr).data([null]);
   sideYearGroups[yr] = sideYearGroups[yr].enter().append('g').attr('class', 'sideYearMark' + yr).attr('id',yr).merge(sideYearGroups[yr]);
-  sideYearGroups[yr].append('text').text(d => "Year: " + yr).attr('stroke', 'black').style('display', 'none');
+  //sideYearGroups[yr].append('text').text(d => "Year: " + yr).attr('stroke', 'black').style('display', 'none');
   
   sideYearMarks[yr] = sideYearGroups[yr].selectAll('circle').data(thisYearData);
   sideYearMarks[yr] = sideYearMarks[yr].enter().append('circle')
@@ -493,7 +493,7 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
      var yearVar = d3.select(this).attr('id');
      d3.selectAll('.stem' + yearVar).selectAll('circle').attr('r', 10);
 	 d3.selectAll('.sideYearMark2' + yearVar).selectAll('circle').attr('r', 7);
-	 sideYearGroups[yearVar].select('text').style('display', null);
+	 //sideYearGroups[yearVar].select('text').style('display', null);
 	 
 	 
 	 /////////////////dkfaljksdla
@@ -510,7 +510,7 @@ sideYearGroups[yr] = sideYearGroups[yr].on('mouseover', function(d){
 	///////////////dsafdaldjlda
 		d3.selectAll('.stem' + yearVar).selectAll('.link' + yearVar).style('stroke-dasharray','5,2').style('stroke-width', 1);
 		d3.selectAll('.sideLineMarksXX' + yearVar).style('stroke-width', 1);
-		sideYearGroups[yearVar].select('text').style('display', 'none');
+		//sideYearGroups[yearVar].select('text').style('display', 'none');
 	 
                                                   });  
   
