@@ -192,9 +192,9 @@ var svg = d3.select('div').selectAll('svg').data([null]);
      	.text("Cumulative GHG emissions by Country")
       .attr("y", height/2.5)
       .attr("x", width/6)
-      .attr("font-size", height/30)
-      .attr("font-family", "monospace")
-    	.attr('stroke', 'black');
+      .attr("font-size", innerWidth/45)
+      //.attr("font-family", "monospace")
+	  .attr('stroke', 'black');
 
      graphTitle.exit().remove();   
       
@@ -251,7 +251,7 @@ var svg = d3.select('div').selectAll('svg').data([null]);
 					.attr('stroke','black')
 					.attr('transform', `rotate(-90)`)
 					.attr('x',-innerHeight/3)
-					.attr('y', -innerHeight/9.5);	  
+					.attr('y', -innerWidth/35);	  
 					
 					
 		yAxisG.exit().remove();
@@ -284,7 +284,7 @@ var svg = d3.select('div').selectAll('svg').data([null]);
     		.attr('class', 'popObj')
 			.attr('id',d =>  d.Country)
     		.attr('transform', function(d){return( 
-      									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');})
+      									'translate('+ (xScale(d.Country)+ xScale.bandwidth()/2) + ','  + yScale(d.GHG_Cum - d.GHG + factor * d.GHG)  + ')');});
 										
 										
 										
@@ -311,13 +311,13 @@ var svg = d3.select('div').selectAll('svg').data([null]);
 											var coords = d3.mouse(this);
 											
 											var selection = d3.select(".text" + d.Country).attr('x', coords[0]).attr('y', coords[1]).style('display', null);
-											console.log(selection);
+											//console.log(d3.select(this).select('circle'), "RRRRRRRRRRRRRRRRrOOOOOOOOOOOOOOOOOOBBBBBBBBBBBBBBBB");
 											
 											
 										   })
 				.on('mouseout', function(d){
 				d3.selectAll("path#" + d.Country)
-					.style("stroke-width", 1)
+					.style("stroke-width", 1);
 					
 				d3.selectAll("#link" + d.Country)
 					.style('stroke-width', 1);
@@ -571,7 +571,7 @@ var line2 = d3.line()
 						.text('Year')
 						.attr('stroke','black')
 						.merge(xAxisGLineText2)
-						.attr('transform',`translate(${innerWidth/4.5},${innerHeight/20})`);					
+						.attr('transform',`translate(${innerWidth/5.5},${innerHeight/20})`);					
 	  
 	  xAxisGLine2.exit().remove();
 	  var xAxisLine2 = d3.axisBottom(xScaleSide2);								
@@ -628,8 +628,7 @@ var line2 = d3.line()
       
       
       
- //var sideYearData = data     
-//console.log(fYearData)
+
 var sideYearGroups2 ={};
 var sideYearMarks2 = {};
 for(yr = 1990; yr <= year;yr++)
