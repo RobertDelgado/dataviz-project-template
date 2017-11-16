@@ -208,10 +208,10 @@ var svg = d3.select('div').selectAll('svg').data([null]);
      graphTitle = graphTitle.enter().append('text')
      .attr('class', 'graphTitle')
      	.merge(graphTitle)
-     	.text("Cumulative GHG emissions by Country")
+     	.text("Cumulative GHG emissions by Country (1990-2013)")
       //.attr("y", 0)
       //.attr("x", width/6)
-	  .attr('transform', `translate(${innerWidth/15}, ${innerHeight/15})`)
+	  .attr('transform', `translate(${innerWidth/20}, ${innerHeight/15})`)
       .attr("font-size", innerWidth/45)
       //.attr("font-family", "monospace")
 	  .attr('stroke', 'black');
